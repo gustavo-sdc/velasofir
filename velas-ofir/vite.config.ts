@@ -5,14 +5,6 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  theme: {
-    extend: {
-      fontFamily: {
-        playfair: ['Playfair-Display', 'sans-serif'],
-        quintessential: ['Quintessential', 'cursive'],
-      },
-    },
-  },
   plugins: [
     react(),
     tailwindcss(),
