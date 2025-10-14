@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import logoPreto from './assets/ofir-logo-white-bg.png'
 
 function App() {
