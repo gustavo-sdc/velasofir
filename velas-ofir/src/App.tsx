@@ -1,16 +1,13 @@
 import { useState } from "react";
-import { Leaf, Sparkles, Heart, Wind, ShoppingBag, Menu, X, MapPin, Mail, Phone, Youtube, Instagram, Paperclip, ScrollText } from "lucide-react";
+import { Leaf, Sparkles, Heart, Wind, ShoppingBag, Menu, X, Mail, Phone, Youtube, Instagram } from "lucide-react";
 import Baunilha from "./assets/baunilha-oficial.png";
 import CapimLimao from "./assets/capim-limao-oficial.png";
 import ChaBranco from "./assets/cha-branco-oficial.png";
 import Morango from "./assets/morango-oficial.png";
-import Logo from "./assets/ofir-logo-white-bg.png";
 import Lari from "./assets/pequena-lari.png";
 
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [email, setEmail] = useState("");
-  const [subject, setSubject] = useState("");
   const [productLength, setProductLength] = useState(0);
   
   const products = [
