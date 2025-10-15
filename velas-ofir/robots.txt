@@ -1,0 +1,17 @@
+# robots.txt para velasofir.com.br
+# Permite o acesso de todos os mecanismos de busca
+
+User-agent: *
+Allow: /
+
+# Bloqueia pastas sensíveis (caso existam)
+Disallow: /admin/
+Disallow: /private/
+Disallow: /tmp/
+Disallow: /cgi-bin/
+
+# Indica o local do sitemap (substitua se o caminho for diferente)
+Sitemap: https://www.velasofir.com.br/sitemap.xml
+
+# Informação opcional (não afeta o ranqueamento)
+Host: www.velasofir.com.br
