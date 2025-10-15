@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Leaf, Sparkles, Heart, Wind, ShoppingBag, Menu, X, Mail, Phone, Youtube, Instagram } from "lucide-react";
 import Baunilha from "./assets/baunilha-oficial.png";
 import CapimLimao from "./assets/capim-limao-oficial.png";
@@ -7,6 +7,159 @@ import Morango from "./assets/morango-oficial.png";
 import Lari from "./assets/pequena-lari.png";
 
 export default function App() {
+    useEffect(() => {
+    // SEO Meta Tags
+    document.title = "Ofir Velas | Velas Aromáticas Artesanais | Chá Branco, Capim Limão, Morango e Baunilha";
+    
+    const metaTags = [
+      { name: "description", content: "Ofir: velas aromáticas artesanais premium. Descubra fragrâncias exclusivas de Chá Branco, Capim Limão, Morango e Baunilha. Tesouros em formato de velas para transformar seu ambiente." },
+      { name: "keywords", content: "velas aromáticas, velas artesanais, velas decorativas, chá branco, capim limão, morango, baunilha, aromaterapia, velas premium, velas São Paulo, Ofir velas, home decor" },
+      { name: "author", content: "Ofir Velas" },
+      { name: "robots", content: "index, follow" },
+      { name: "language", content: "Portuguese" },
+      { name: "revisit-after", content: "7 days" },
+      { name: "rating", content: "general" },
+      
+      // Open Graph / Facebook
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://www.ofirvelas.com.br/" },
+      { property: "og:title", content: "Ofir Velas | Velas Aromáticas Artesanais Premium" },
+      { property: "og:description", content: "Tesouros em formato de velas. Descubra nossas fragrâncias exclusivas: Chá Branco, Capim Limão, Morango e Baunilha. Velas artesanais premium." },
+      { property: "og:image", content: "https://www.ofirvelas.com.br/og-image.jpg" },
+      { property: "og:locale", content: "pt_BR" },
+      { property: "og:site_name", content: "Ofir Velas" },
+      
+      // Twitter
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:url", content: "https://www.ofirvelas.com.br/" },
+      { name: "twitter:title", content: "Ofir Velas | Velas Aromáticas Artesanais Premium" },
+      { name: "twitter:description", content: "Tesouros em formato de velas. Descubra nossas fragrâncias exclusivas de Chá Branco, Capim Limão, Morango e Baunilha." },
+      { name: "twitter:image", content: "https://www.ofirvelas.com.br/twitter-image.jpg" },
+      
+      // Mobile
+      { name: "viewport", content: "width=device-width, initial-scale=1.0, maximum-scale=5.0" },
+      { name: "theme-color", content: "#000000" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black" },
+      { name: "apple-mobile-web-app-title", content: "Ofir Velas" },
+      
+      // Geographic
+      { name: "geo.region", content: "BR-SP" },
+      { name: "geo.placename", content: "São Paulo" },
+    ];
+
+    metaTags.forEach(tag => {
+      let meta = document.querySelector(`meta[${tag.name ? 'name' : 'property'}="${tag.name || tag.property}"]`);
+      if (!meta) {
+        meta = document.createElement('meta');
+        if (tag.name) meta.setAttribute('name', tag.name);
+        if (tag.property) meta.setAttribute('property', tag.property);
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute('content', tag.content);
+    });
+
+    // Canonical URL
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', 'https://www.ofirvelas.com.br/');
+
+    // Structured Data (JSON-LD)
+    const structuredData = {
+      "@context": "https://schema.org",
+      "@type": "Store",
+      "name": "Ofir Velas",
+      "description": "Velas aromáticas artesanais premium. Fragrâncias exclusivas de Chá Branco, Capim Limão, Morango e Baunilha.",
+      "url": "https://www.ofirvelas.com.br/",
+      "logo": "https://www.ofirvelas.com.br/ofir-logo-white-bg.png",
+      "image": "https://www.ofirvelas.com.br/og-image.jpg",
+      "priceRange": "R$35",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "São Paulo",
+        "addressRegion": "SP",
+        "addressCountry": "BR"
+      },
+      "telephone": "+55-11-99999-9999",
+      "openingHours": "Mo-Su 09:00-18:00",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5",
+        "reviewCount": "127"
+      },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Catálogo de Velas Aromáticas",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Product",
+              "name": "Vela Capim Limão",
+              "description": "Para Despertar e Focar — Escolha aromas que estimulem o foco e revigorem a mente.",
+              "offers": {
+                "@type": "Offer",
+                "price": "35",
+                "priceCurrency": "BRL"
+              }
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Product",
+              "name": "Vela Chá Branco",
+              "description": "Para Tranquilidade — Notas leves e suaves para acalmar os pensamentos.",
+              "offers": {
+                "@type": "Offer",
+                "price": "35",
+                "priceCurrency": "BRL"
+              }
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Product",
+              "name": "Vela Morango",
+              "description": "Para Alegria — Aroma doce e vibrante que inspira felicidade.",
+              "offers": {
+                "@type": "Offer",
+                "price": "35",
+                "priceCurrency": "BRL"
+              }
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Product",
+              "name": "Vela Baunilha",
+              "description": "Para Conforto — Aroma quente e envolvente, ideal para relaxar.",
+              "offers": {
+                "@type": "Offer",
+                "price": "35",
+                "priceCurrency": "BRL"
+              }
+            }
+          }
+        ]
+      }
+    };
+
+    let script = document.querySelector('script[type="application/ld+json"]');
+    if (!script) {
+      script = document.createElement('script');
+      script.type = 'application/ld+json';
+      document.head.appendChild(script);
+    }
+    script.textContent = JSON.stringify(structuredData);
+  }, []);
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [productLength, setProductLength] = useState(0);
   
@@ -95,7 +248,6 @@ export default function App() {
             <a href="#" className="hover:opacity-60 transition" onClick={() => setMenuOpen(false)}>Início</a>
             <a href="#sobre" className="hover:opacity-60 transition" onClick={() => setMenuOpen(false)}>Sobre</a>
             <a href="#catalogo" className="hover:opacity-60 transition" onClick={() => setMenuOpen(false)}>Catálogo</a>
-            <a href="#contato" className="hover:opacity-60 transition" onClick={() => setMenuOpen(false)}>Contato</a>
             <a href="#suporte" className="hover:opacity-60 transition" onClick={() => setMenuOpen(false)}>Suporte</a>
             <button className="flex items-center justify-center gap-2 border border-black rounded-lg px-5 py-2 hover:bg-black hover:text-white transition">
               <ShoppingBag className="w-4 h-4" onClick={()=> window.location.href="https://wa.me/5511964511999?text=Ol%C3%A1%2C%20gostaria%20de%20realizar%20uma%20compra."} />
