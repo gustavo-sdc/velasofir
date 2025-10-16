@@ -59,6 +59,8 @@ export default function App() {
       meta.setAttribute('content', tag.content);
     });
 
+    
+
     // Canonical URL
     let canonical = document.querySelector('link[rel="canonical"]');
     if (!canonical) {
@@ -160,9 +162,15 @@ export default function App() {
     (script as HTMLScriptElement).textContent = JSON.stringify(structuredData);
   }, []);
 
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [productLength, setProductLength] = useState(0);
   
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [productLength, setProductLength] = useState(1);
+  const [priceTotal, setPriceTotal] = useState('');
+  
+  useEffect(() => {
+    setPriceTotal(`R$${(35 * productLength).toFixed(2).replace('.', ',')}`);
+  }, [productLength]);
+
   const products = [
     {
       name: "Capim Limão",
@@ -172,6 +180,7 @@ export default function App() {
       materiaPrima: "Cera de coco",
       icon: CapimLimao ? <img src={CapimLimao} alt="Capim Limão" className="w-full object-contain" /> : <Wind className="w-5 h-5" />,
       color: "",
+      price: 35,
       link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma capim limão.`)}`,
     },
     {
@@ -182,6 +191,7 @@ export default function App() {
       materiaPrima: "Cera de coco",
       icon: ChaBranco ? <img src={ChaBranco} alt="Chá Branco" className="w-sm-full object-contain" /> : <Leaf className="w-5 h-5" />,
       color: "",
+      price: 35,
       link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma chá branco.`)}`,
     },
     {
@@ -192,6 +202,7 @@ export default function App() {
       materiaPrima: "Cera de coco",
       icon: Morango ? <img src={Morango} alt="Morango" className="w-full object-contain" /> : <Heart className="w-5 h-5" />,
       color: "",
+      price: 35,
       link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma morango.`)}`,
     },
     {
@@ -202,6 +213,7 @@ export default function App() {
       materiaPrima: "Cera de coco",
       icon: Baunilha ? <img src={Baunilha} alt="Baunilha" className="w-sm-full object-contain" /> : <Sparkles className="w-5 h-5" />,
       color: "",
+      price: 35,
       link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma baunilha.`)}`,
     },
   ];
@@ -346,7 +358,8 @@ export default function App() {
                 </div>
               </div>
               <div className="w-full md:w-1/2">
-                <h3 className="text-3xl font-bold mb-2">{selected.name}</h3>
+                <h3 className="text-3xl font-bold">{selected.name}</h3>
+                <p className="text-2xl font-bold mb-2">{priceTotal}</p>
                 <p className="text-base md:text-lg mb-6 leading-relaxed">{selected.desc}</p>
                 <div className="space-y-1 mb-6 text-sm md:text-base">
                   <p><strong>{selected.queima}</strong></p>
@@ -367,7 +380,6 @@ export default function App() {
                         –
                       </button>
 
-                      {/* Input numérico */}
                       <input
                         type="number"
                         name="quantidade"
@@ -378,7 +390,6 @@ export default function App() {
                         className="w-10 text-center bg-transparent text-white outline-none"
                       />
 
-                      {/* Botão de aumentar */}
                       <button
                         type="button"
                         onClick={() => setProductLength(productLength + 1)}
@@ -394,7 +405,7 @@ export default function App() {
                   <button
                     onClick={() => {
                       const phone = "5511964511999";
-                      const msg = `Olá! Tenho interesse em ${productLength} vela(s) ${selected.name}.`;
+                      const msg = `Olá! Tenho interesse em ${productLength} vela(s) (${priceTotal}), de ${selected.name}.`;
                       const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
                       window.open(url, "_blank");
                     }}
