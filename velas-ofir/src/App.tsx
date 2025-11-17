@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { Leaf, Sparkles, Heart, Wind, ShoppingBag, Menu, X, Mail, Phone, Youtube, Instagram } from "lucide-react";
+import { Leaf, Sparkles, Heart, Wind, ShoppingBag, Menu, X, Mail, Phone, Youtube, Instagram, TreePine, Snowflake, SnowflakeIcon } from "lucide-react";
 import Baunilha from "./assets/baunilha-oficial.png";
 import CapimLimao from "./assets/capim-limao-oficial.png";
 import ChaBranco from "./assets/cha-branco-oficial.png";
 import Morango from "./assets/morango-oficial.png";
 import Lari from "./assets/pequena-lari.png";
+import Pinheiro from "./assets/pinheiro-natal.jpg";
+import Flocos from "./assets/floco-de-neve.jpg";
 
 export default function App() {
     useEffect(() => {
@@ -167,11 +169,66 @@ export default function App() {
   const [productLength, setProductLength] = useState(1);
   const [priceTotal, setPriceTotal] = useState('');
   
-  useEffect(() => {
-    setPriceTotal(`R$${(35 * productLength).toFixed(2).replace('.', ',')}`);
-  }, [productLength]);
-
   const products = [
+    {
+      name: "Pinheiro de Inverno - Baunilha",
+      desc: "A mistura perfeita entre o frescor do pinheiro e o aconchego da baunilha. Aroma suave e natalino para aquecer o ambiente.",
+      queima: "Queima: 25h",
+      tamanho: "Tamanho: 150g",
+      materiaPrima: "Cera de coco",
+      icon: TreePine ? <img src={Pinheiro} alt="Pinheiro de Inverno" className="w-full object-contain" /> : <Wind className="w-5 h-5" />,
+      color: "",
+      price: 55,
+      link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma capim limão.`)}`,
+    },
+    {
+      name: "Pinheiro de Inverno - Bamboo com Alecrim",
+      desc: "Refrescante e revigorante. Bamboo e alecrim trazem leveza e foco, enquanto o toque de pinheiro entrega o clima do Natal.",
+      queima: "Queima: 25h",
+      tamanho: "Tamanho: 150g",
+      materiaPrima: "Cera de coco",
+      icon: TreePine ? <img src={Pinheiro} alt="Chá Branco" className="w-sm-full object-contain" /> : <Leaf className="w-5 h-5" />,
+      color: "",
+      price: 55,
+      link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma chá branco.`)}`,
+    },
+    {
+      name: "2 Flocos de Neve - Baunilha",
+      desc: "Doce, delicado e acolhedor. A essência ideal para criar uma atmosfera tranquila e festiva nas noites de Natal.",
+      queima: "Queima: 25h",
+      tamanho: "Tamanho: 50g",
+      materiaPrima: "Cera de coco",
+      icon: SnowflakeIcon ? <img src={Flocos} alt="Flocos de Neve" className="w-full object-contain" /> : <Heart className="w-5 h-5" />,
+      color: "",
+      price: 25,
+      link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma morango.`)}`,
+    },
+    {
+      name: "2 Flocos de Neve - Bamboo com Alecrim",
+      desc: "Leve, puro e renovador. A combinação perfeita para deixar o ambiente mais fresco e iluminado nesta temporada natalina.",
+      queima: "Queima: 25h",
+      tamanho: "Tamanho: 50g",
+      materiaPrima: "Cera de coco",
+      icon: SnowflakeIcon ? <img src={Flocos} alt="Baunilha" className="w-sm-full object-contain" /> : <Sparkles className="w-5 h-5" />,
+      color: "",
+      price: 25,
+      link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma baunilha.`)}`,
+    },
+  ];
+  
+  const [selected, setSelected] = useState(products[0]);
+
+  useEffect(() => {
+    if (!selected) return;
+
+    const unitPrice = Number(selected.price) || 0;
+    const total = unitPrice * Number(productLength || 1);
+
+    setPriceTotal(`R$ ${total.toFixed(2).replace('.', ',')}`);
+  }, [productLength, selected]);
+
+
+  const base_products = [
     {
       name: "Capim Limão",
       desc: "Para Despertar e Focar — Escolha aromas que estimulem o foco e revigorem a mente.",
@@ -218,7 +275,6 @@ export default function App() {
     },
   ];
 
-  const [selected, setSelected] = useState(products[0]);
 
   return (
     <div className="font-serif text-gray-900" style={{ fontFamily: "'Inria Serif', serif" }}>
@@ -288,7 +344,7 @@ export default function App() {
       {/* Produtos Preview */}
       <section className="py-12 px-4 bg-white">
         <div className="flex justify-center align-center -gap-4 overflow-x-auto pb-4">
-          {products.map((product, idx) => (
+          {base_products.map((product, idx) => (
             <div key={idx} className={`w-64 md:w-64 ${product.color} flex items-center justify-center`}>
               {product.icon}
             </div>
