@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Leaf, Sparkles, Heart, Wind, ShoppingBag, Menu, X, Mail, Phone, Youtube, Instagram, TreePine, Snowflake, SnowflakeIcon } from "lucide-react";
+import { Leaf, Sparkles, Heart, Wind, ShoppingBag, Menu, X, Mail, Phone, Youtube, Instagram } from "lucide-react";
 import Baunilha from "./assets/baunilha-oficial.png";
 import CapimLimao from "./assets/capim-limao-oficial.png";
 import ChaBranco from "./assets/cha-branco-oficial.png";
@@ -176,7 +176,7 @@ export default function App() {
       queima: "Queima: 25h",
       tamanho: "Tamanho: 150g",
       materiaPrima: "Cera de coco",
-      icon: TreePine ? <img src={Pinheiro} alt="Pinheiro de Inverno" className="w-full object-contain" /> : <Wind className="w-5 h-5" />,
+      icon: Pinheiro ? <img src={Pinheiro} alt="Pinheiro de Inverno" className="w-full object-contain" /> : <Wind className="w-5 h-5" />,
       color: "",
       price: 55,
       link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma capim limão.`)}`,
@@ -187,7 +187,7 @@ export default function App() {
       queima: "Queima: 25h",
       tamanho: "Tamanho: 150g",
       materiaPrima: "Cera de coco",
-      icon: TreePine ? <img src={Pinheiro} alt="Chá Branco" className="w-sm-full object-contain" /> : <Leaf className="w-5 h-5" />,
+      icon: Pinheiro ? <img src={Pinheiro} alt="Chá Branco" className="w-sm-full object-contain" /> : <Leaf className="w-5 h-5" />,
       color: "",
       price: 55,
       link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma chá branco.`)}`,
@@ -198,7 +198,7 @@ export default function App() {
       queima: "Queima: 25h",
       tamanho: "Tamanho: 50g",
       materiaPrima: "Cera de coco",
-      icon: SnowflakeIcon ? <img src={Flocos} alt="Flocos de Neve" className="w-full object-contain" /> : <Heart className="w-5 h-5" />,
+      icon: Flocos ? <img src={Flocos} alt="Flocos de Neve" className="w-full object-contain" /> : <Heart className="w-5 h-5" />,
       color: "",
       price: 25,
       link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma morango.`)}`,
@@ -209,7 +209,7 @@ export default function App() {
       queima: "Queima: 25h",
       tamanho: "Tamanho: 50g",
       materiaPrima: "Cera de coco",
-      icon: SnowflakeIcon ? <img src={Flocos} alt="Baunilha" className="w-sm-full object-contain" /> : <Sparkles className="w-5 h-5" />,
+      icon: Flocos ? <img src={Flocos} alt="Baunilha" className="w-sm-full object-contain" /> : <Sparkles className="w-5 h-5" />,
       color: "",
       price: 25,
       link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma baunilha.`)}`,
