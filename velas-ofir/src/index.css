@@ -1,9 +1,58 @@
-@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Quintessential&display=swap');
+@import "tailwindcss";
 
 body {
   font-family: 'Playfair Display', serif;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+@import "tailwindcss";
+
+@theme {
+  /* Fade + Slide */
+  --animate-fade-up: fadeUp 0.8s ease-out forwards;
+
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Floating (imagens) */
+  --animate-float: float 6s ease-in-out infinite;
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-15px);
+    }
+  }
+
+  /* Delay helpers */
+  --animate-delay-1: fadeUp 1s ease-out forwards;
+  --animate-delay-2: fadeUp 1.2s ease-out forwards;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 1s ease forwards;
 }

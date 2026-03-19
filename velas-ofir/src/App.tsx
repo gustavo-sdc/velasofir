@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { Leaf, Sparkles, Heart, Wind, ShoppingBag, Menu, X, Mail, Phone, Youtube, Instagram } from "lucide-react";
-import Baunilha from "./assets/baunilha-oficial.png";
-import CapimLimao from "./assets/capim-limao-oficial.png";
-import ChaBranco from "./assets/cha-branco-oficial.png";
-import Morango from "./assets/morango-oficial.png";
-import Lari from "./assets/pequena-lari.png";
-import Pinheiro from "./assets/pinheiro-natal.jpg";
-import Flocos from "./assets/floco-de-neve.jpg";
+import {  Sparkles,  ShoppingBag, Menu, X, Mail, Phone, Youtube, Instagram } from "lucide-react";
+import { Typewriter } from "./components/Typing/typing";
+import CascaBaunilha from "./assets/casca-baunilha.png";
+import Maracuja from "./assets/maracuja.png";
+import CestoMorango from "./assets/cesto-morango.png";
+import VideoBackgroundOfir from "./assets/video-background-ofir.mp4";
+import FirstCollection from "./assets/first-collection.png";
+import SnowToy from "./assets/snow-toy.png";
+import Dessert from "./assets/dessert.png";
 
 export default function App() {
     useEffect(() => {
@@ -166,115 +167,123 @@ export default function App() {
 
   
   const [menuOpen, setMenuOpen] = useState(false);
-  const [productLength, setProductLength] = useState(1);
-  const [priceTotal, setPriceTotal] = useState('');
   
-  const products = [
-    {
-      name: "Pinheiro de Inverno - Baunilha",
-      desc: "A mistura perfeita entre o frescor do pinheiro e o aconchego da baunilha. Aroma suave e natalino para aquecer o ambiente.",
-      queima: "Queima: 25h",
-      tamanho: "Tamanho: 150g",
-      materiaPrima: "Cera de coco",
-      icon: Pinheiro ? <img src={Pinheiro} alt="Pinheiro de Inverno" className="w-full object-contain" /> : <Wind className="w-5 h-5" />,
-      color: "",
-      price: 55,
-      link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma capim limão.`)}`,
-    },
-    {
-      name: "Pinheiro de Inverno - Bamboo com Alecrim",
-      desc: "Refrescante e revigorante. Bamboo e alecrim trazem leveza e foco, enquanto o toque de pinheiro entrega o clima do Natal.",
-      queima: "Queima: 25h",
-      tamanho: "Tamanho: 150g",
-      materiaPrima: "Cera de coco",
-      icon: Pinheiro ? <img src={Pinheiro} alt="Chá Branco" className="w-sm-full object-contain" /> : <Leaf className="w-5 h-5" />,
-      color: "",
-      price: 55,
-      link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma chá branco.`)}`,
-    },
-    {
-      name: "2 Flocos de Neve - Baunilha",
-      desc: "Doce, delicado e acolhedor. A essência ideal para criar uma atmosfera tranquila e festiva nas noites de Natal.",
-      queima: "Queima: 25h",
-      tamanho: "Tamanho: 50g",
-      materiaPrima: "Cera de coco",
-      icon: Flocos ? <img src={Flocos} alt="Flocos de Neve" className="w-full object-contain" /> : <Heart className="w-5 h-5" />,
-      color: "",
-      price: 25,
-      link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma morango.`)}`,
-    },
-    {
-      name: "2 Flocos de Neve - Bamboo com Alecrim",
-      desc: "Leve, puro e renovador. A combinação perfeita para deixar o ambiente mais fresco e iluminado nesta temporada natalina.",
-      queima: "Queima: 25h",
-      tamanho: "Tamanho: 50g",
-      materiaPrima: "Cera de coco",
-      icon: Flocos ? <img src={Flocos} alt="Baunilha" className="w-sm-full object-contain" /> : <Sparkles className="w-5 h-5" />,
-      color: "",
-      price: 25,
-      link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma baunilha.`)}`,
-    },
-  ];
+  // const products = [
+  //   {
+  //     name: "Pinheiro de Inverno - Baunilha",
+  //     desc: "A mistura perfeita entre o frescor do pinheiro e o aconchego da baunilha. Aroma suave e natalino para aquecer o ambiente.",
+  //     queima: "Queima: 25h",
+  //     tamanho: "Tamanho: 150g",
+  //     materiaPrima: "Cera de coco",
+  //     icon: Pinheiro ? <img src={Pinheiro} alt="Pinheiro de Inverno" className="w-full object-contain" /> : <Wind className="w-5 h-5" />,
+  //     color: "",
+  //     price: 55,
+  //     link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma capim limão.`)}`,
+  //   },
+  //   {
+  //     name: "Pinheiro de Inverno - Bamboo com Alecrim",
+  //     desc: "Refrescante e revigorante. Bamboo e alecrim trazem leveza e foco, enquanto o toque de pinheiro entrega o clima do Natal.",
+  //     queima: "Queima: 25h",
+  //     tamanho: "Tamanho: 150g",
+  //     materiaPrima: "Cera de coco",
+  //     icon: Pinheiro ? <img src={Pinheiro} alt="Chá Branco" className="w-sm-full object-contain" /> : <Leaf className="w-5 h-5" />,
+  //     color: "",
+  //     price: 55,
+  //     link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma chá branco.`)}`,
+  //   },
+  //   {
+  //     name: "2 Flocos de Neve - Baunilha",
+  //     desc: "Doce, delicado e acolhedor. A essência ideal para criar uma atmosfera tranquila e festiva nas noites de Natal.",
+  //     queima: "Queima: 25h",
+  //     tamanho: "Tamanho: 50g",
+  //     materiaPrima: "Cera de coco",
+  //     icon: Flocos ? <img src={Flocos} alt="Flocos de Neve" className="w-full object-contain" /> : <Heart className="w-5 h-5" />,
+  //     color: "",
+  //     price: 25,
+  //     link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma morango.`)}`,
+  //   },
+  //   {
+  //     name: "2 Flocos de Neve - Bamboo com Alecrim",
+  //     desc: "Leve, puro e renovador. A combinação perfeita para deixar o ambiente mais fresco e iluminado nesta temporada natalina.",
+  //     queima: "Queima: 25h",
+  //     tamanho: "Tamanho: 50g",
+  //     materiaPrima: "Cera de coco",
+  //     icon: Flocos ? <img src={Flocos} alt="Baunilha" className="w-sm-full object-contain" /> : <Sparkles className="w-5 h-5" />,
+  //     color: "",
+  //     price: 25,
+  //     link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma baunilha.`)}`,
+  //   },
+  // ];
   
-  const [selected, setSelected] = useState(products[0]);
-
-  useEffect(() => {
-    if (!selected) return;
-
-    const unitPrice = Number(selected.price) || 0;
-    const total = unitPrice * Number(productLength || 1);
-
-    setPriceTotal(`R$ ${total.toFixed(2).replace('.', ',')}`);
-  }, [productLength, selected]);
 
 
-  const base_products = [
+  // const base_products = [
+  //   {
+  //     name: "Capim Limão",
+  //     desc: "Para Despertar e Focar — Escolha aromas que estimulem o foco e revigorem a mente.",
+  //     queima: "Queima: 25h",
+  //     tamanho: "Tamanho: 110g",
+  //     materiaPrima: "Cera de coco",
+  //     icon: CapimLimao ? <img src={CapimLimao} alt="Capim Limão" className="w-full object-contain" /> : <Wind className="w-5 h-5" />,
+  //     color: "",
+  //     price: 35,
+  //     link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma capim limão.`)}`,
+  //   },
+  //   {
+  //     name: "Chá Branco",
+  //     desc: "Para Tranquilidade — Notas leves e suaves para acalmar os pensamentos.",
+  //     queima: "Queima: 25h",
+  //     tamanho: "Tamanho: 110g",
+  //     materiaPrima: "Cera de coco",
+  //     icon: ChaBranco ? <img src={ChaBranco} alt="Chá Branco" className="w-sm-full object-contain" /> : <Leaf className="w-5 h-5" />,
+  //     color: "",
+  //     price: 35,
+  //     link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma chá branco.`)}`,
+  //   },
+  //   {
+  //     name: "Morango",
+  //     desc: "Para Alegria — Aroma doce e vibrante que inspira felicidade.",
+  //     queima: "Queima: 25h",
+  //     tamanho: "Tamanho: 110g",
+  //     materiaPrima: "Cera de coco",
+  //     icon: Morango ? <img src={Morango} alt="Morango" className="w-full object-contain" /> : <Heart className="w-5 h-5" />,
+  //     color: "",
+  //     price: 35,
+  //     link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma morango.`)}`,
+  //   },
+  //   {
+  //     name: "Baunilha",
+  //     desc: "Para Conforto — Aroma quente e envolvente, ideal para relaxar.",
+  //     queima: "Queima: 25h",
+  //     tamanho: "Tamanho: 110g",
+  //     materiaPrima: "Cera de coco",
+  //     icon: Baunilha ? <img src={Baunilha} alt="Baunilha" className="w-sm-full object-contain" /> : <Sparkles className="w-5 h-5" />,
+  //     color: "",
+  //     price: 35,
+  //     link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma baunilha.`)}`,
+  //   },
+  // ];
+  
+  const collections = [
     {
-      name: "Capim Limão",
-      desc: "Para Despertar e Focar — Escolha aromas que estimulem o foco e revigorem a mente.",
-      queima: "Queima: 25h",
-      tamanho: "Tamanho: 110g",
-      materiaPrima: "Cera de coco",
-      icon: CapimLimao ? <img src={CapimLimao} alt="Capim Limão" className="w-full object-contain" /> : <Wind className="w-5 h-5" />,
-      color: "",
-      price: 35,
-      link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma capim limão.`)}`,
+      name: "First Collection",
+      desc: "Uma expressão pura da essência Ofir, com formas, aromas e intenções que deram origem a uma identidade construída com sensibilidade e propósito.",
+      image: FirstCollection,
+      active: false
     },
     {
-      name: "Chá Branco",
-      desc: "Para Tranquilidade — Notas leves e suaves para acalmar os pensamentos.",
-      queima: "Queima: 25h",
-      tamanho: "Tamanho: 110g",
-      materiaPrima: "Cera de coco",
-      icon: ChaBranco ? <img src={ChaBranco} alt="Chá Branco" className="w-sm-full object-contain" /> : <Leaf className="w-5 h-5" />,
-      color: "",
-      price: 35,
-      link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma chá branco.`)}`,
+      name: "White Christmas Collection",
+      desc: "Notas suaves e envolventes que evocam a leveza do inverno e a elegância dos momentos mais íntimos.",
+      image: SnowToy,
+      active: false
     },
     {
-      name: "Morango",
-      desc: "Para Alegria — Aroma doce e vibrante que inspira felicidade.",
-      queima: "Queima: 25h",
-      tamanho: "Tamanho: 110g",
-      materiaPrima: "Cera de coco",
-      icon: Morango ? <img src={Morango} alt="Morango" className="w-full object-contain" /> : <Heart className="w-5 h-5" />,
-      color: "",
-      price: 35,
-      link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma morango.`)}`,
-    },
-    {
-      name: "Baunilha",
-      desc: "Para Conforto — Aroma quente e envolvente, ideal para relaxar.",
-      queima: "Queima: 25h",
-      tamanho: "Tamanho: 110g",
-      materiaPrima: "Cera de coco",
-      icon: Baunilha ? <img src={Baunilha} alt="Baunilha" className="w-sm-full object-contain" /> : <Sparkles className="w-5 h-5" />,
-      color: "",
-      price: 35,
-      link: `https://wa.me/5511964511999?text=${encodeURIComponent(`Olá, gostaria de realizar uma compra de ${productLength} velas com aroma baunilha.`)}`,
-    },
+      name: "Dessert Collection",
+      desc: "A doçura se revela de forma sofisticada, criando uma atmosfera acolhedora, marcante e irresistivelmente confortável.",
+      image: Dessert,
+      active: true
+    }
   ];
-
 
   return (
     <div className="font-serif text-gray-900" style={{ fontFamily: "'Inria Serif', serif" }}>
@@ -283,9 +292,9 @@ export default function App() {
       `}</style>
 
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 bg-white z-50 border-b border-gray-200 shadow-sm">
+      <header className="fixed top-0 left-0 right-0 bg-white z-50 border-b border-gray-50 ">
         <div className="flex justify-between items-center py-4 px-4 md:px-12">
-          <div className="text-2xl font-bold tracking-wider">OFIR.</div>
+          {/* <div className="text-2xl font-bold tracking-wider">OFIR.</div> */}
           
           {/* Desktop Nav */}
           <nav className="hidden md:flex gap-6 text-sm">
@@ -317,7 +326,7 @@ export default function App() {
             <a href="#sobre" className="hover:opacity-60 transition" onClick={() => setMenuOpen(false)}>Sobre</a>
             <a href="#catalogo" className="hover:opacity-60 transition" onClick={() => setMenuOpen(false)}>Catálogo</a>
             <a href="#suporte" className="hover:opacity-60 transition" onClick={() => setMenuOpen(false)}>Suporte</a>
-            <button className="flex items-center justify-center gap-2 border border-black rounded-lg px-5 py-2 hover:bg-black hover:text-white transition">
+            <button className="flex items-center justify-center gap-2 rounded-lg px-5 py-2 hover:bg-black hover:text-white transition">
               <ShoppingBag className="w-4 h-4" onClick={()=> window.location.href="https://wa.me/5511964511999?text=Ol%C3%A1%2C%20gostaria%20de%20realizar%20uma%20compra."} />
               Comprar
             </button>
@@ -329,152 +338,163 @@ export default function App() {
       <div className="h-16"></div>
 
       {/* Hero */}
-      <section className="flex flex-col items-center text-center py-16 px-4 bg-gradient-to-b from-gray-50 to-white">
-        <div className="text-6xl md:text-8xl font-bold tracking-wider mb-4">OFIR.</div>
-        <p className="text-xl md:text-2xl mb-8 max-w-md">
-          <span className="font-bold">Tesouros</span> em formato de <span className="font-bold">velas</span>
-        </p>
-        <a href="#catalogo">
-          <button className="bg-black text-white px-8 py-3 rounded-lg hover:opacity-90 transition">
-            Saiba mais
-          </button>
-        </a>
-      </section>
+      <section className="relative w-full min-h-screen bg-white flex flex-col justify-center py-6 pl-12 md:flex-row md:items-center md:py-12">
+        {/* TEXTO */}
+        <div className="z-10 md:w-1/2 ml-8">
 
-      {/* Produtos Preview */}
-      <section className="py-12 px-4 bg-white">
-        <div className="flex justify-center align-center -gap-4 overflow-x-auto pb-4">
-          {base_products.map((product, idx) => (
-            <div key={idx} className={`w-64 md:w-64 ${product.color} flex items-center justify-center`}>
-              {product.icon}
-            </div>
-          ))}
-        </div>
-      </section>
+          <h1 className="text-5xl md:text-8xl font-serif text-black mb-4 md:mb-6 opacity-0 animate-fade-up">
+            OFIR.
+          </h1>
 
-      {/* Sobre */}
-      <section id="sobre" className="bg-black text-white py-16 px-4 md:px-16">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-12">
-          <div className="md:w-1/2">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Sobre</h2>
-            <div className="space-y-4 text-sm md:text-base leading-relaxed">
-              <p>
-                <strong>A primeira faísca</strong><br />
-                Nasci em São Paulo, cercada por <strong>movimento</strong> e <strong>possibilidades</strong> e desde cedo, a curiosidade foi o que me guiou.
-              </p>
-              <p>
-                Sempre gostei de criar, de entender como as coisas funcionam e de conquistar o que eu imaginava. 
-                Durante a pandemia, aos 18 anos, transformei meu tempo livre em um pequeno grande passo: criei minha primeira loja online de miçangas, onde descobri o prazer de dar forma às ideias.
-              </p>
-              <p>
-                Aos 18, iniciei a faculdade de medicina, atraída pela precisão e pela busca constante por aperfeiçoamento. 
-                Entre a arte e a ciência, encontrei meu <strong>equilíbrio</strong> e é dessa união que nasce a essência de Ofir.
-              </p>
-            </div>
-            <button className="mt-8 bg-white text-black px-8 py-3 rounded-lg hover:opacity-90 transition" onClick={() => window.open("https://www.instagram.com/velasofir", "_blank")}>
+          <p className="text-lg md:text-2xl mb-6 md:mb-8 max-w-sm md:max-w-lg opacity-0 animate-delay-1">
+            <span className="font-semibold">Tesouros</span> em formato de{" "}
+            <span className="font-semibold">
+              <Typewriter text="velas" />
+            </span>
+          </p>
+
+          <a href="#catalogo">
+            <button className="bg-black text-white px-6 py-3 md:px-8 rounded-md opacity-0 animate-delay-2 hover:opacity-90 transition">
               Saiba mais
             </button>
+          </a>
+        </div>
+
+        {/* IMAGENS */}
+        <div className="pointer-events-none absolute inset-0 md:relative md:w-[30%] md:ml-auto z-10">
+
+          <div className="absolute bottom-0 right-0 w-40 md:w-[22vw] animate-float">
+            <img src={Maracuja} className="w-full h-auto object-contain drop-shadow-xl"/>
           </div>
-          <div className="md:w-1/2 flex justify-center">
-            <img src={Lari} alt="Lari" className="w-48 md:w-60" />
+          
+          <div className="absolute top-0 right-0 w-32 md:w-[20vw] animate-float [animation-delay:1s]">
+            <img src={CascaBaunilha} className="w-full h-auto object-contain drop-shadow-xl"/>
           </div>
+
+          <div className="absolute top-0 right-0 w-40 md:w-[24vw] animate-float [animation-delay:2s]">
+            <img src={CestoMorango} className="w-full h-auto object-contain drop-shadow-xl"/>
+          </div>
+
+        </div>
+
+      </section>
+
+
+
+      {/* Sobre */}
+      <section id="sobre" className="relative bg-black text-white py-24 px-4 md:px-16 overflow-hidden z-0">
+
+        {/* VIDEO BACKGROUND */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover opacity-40"
+        >
+          <source src={VideoBackgroundOfir} type="video/mp4" />
+        </video>
+
+        {/* OVERLAY ESCURO */}
+        <div className="absolute inset-0 bg-black/60"></div>
+
+        {/* CONTEÚDO */}
+        <div className="relative max-w-6xl mx-auto flex flex-col items-center text-center">
+
+          {/* TÍTULO CENTRAL */}
+          <h2 className="text-3xl md:text-5xl font-semibold mb-10">
+            A primeira faísca
+            {/* <span className="font-bold">
+              <Typewriter text="faísca" />
+            </span> */}
+          </h2>
+
+          {/* TEXTO */}
+          <div className="max-w-3xl space-y-6 text-sm md:text-base leading-relaxed text-gray-100">
+            <p>
+              Nasci em São Paulo, cercada por <strong>movimento</strong> e <strong>possibilidades</strong> e desde cedo, a curiosidade foi o que me guiou.
+            </p>
+
+            <p>
+              Sempre gostei de criar, de entender como as coisas funcionam e de conquistar o que eu imaginava. 
+              Durante a pandemia, aos 18 anos, transformei meu tempo livre em um pequeno grande passo: criei minha primeira loja online de miçangas, onde descobri o prazer de dar forma às ideias.
+            </p>
+
+            <p>
+              Aos 18, iniciei a faculdade de medicina, atraída pela precisão e pela busca constante por aperfeiçoamento. 
+              Entre a arte e a ciência, encontrei meu <strong>equilíbrio</strong> e é dessa união que nasce a essência de Ofir.
+            </p>
+          </div>
+
+          {/* BOTÃO */}
+          <button
+            className="mt-10 bg-white text-black px-8 py-3 rounded-lg hover:opacity-90 transition"
+            onClick={() => window.open("https://www.instagram.com/velasofir", "_blank")}
+          >
+            Saiba mais
+          </button>
+
         </div>
       </section>
 
       {/* Catálogo */}
-      <section id="catalogo" className="py-16 px-4 md:px-16 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-8">Catálogo</h2>
-          
-          {/* Product Selector */}
-          <div className="flex flex-wrap gap-3 mb-10">
-            {products.map((p) => (
-              <button
-                key={p.name}
-                onClick={() => setSelected(p)}
-                className={`flex items-center gap-2 px-4 py-3 border-2 rounded-lg text-sm md:text-base transition ${
-                  selected.name === p.name
-                    ? "bg-black text-white border-black"
-                    : "border-gray-300 hover:border-black"
-                }`}
-              >
-                {p.name}
-              </button>
-            ))}
-          </div>
+<section id="catalogo" className="bg-white py-10 px-4 md:px-16 overflow-hidden">
+  <div className="max-w-6xl mx-auto space-y-10">
 
-          {/* Product Display */}
-          <div className="bg-gray-50 rounded-2xl p-6 md:p-10">
-            <div className="flex flex-col md:flex-row items-center gap-8">
-              <div className="w-full md:w-1/2 flex justify-center">
-                <div className={`w-64 h-64 md:w-80 md:h-80 ${selected.color} rounded-2xl shadow-lg flex items-center justify-center`}>
-                  <div className="text-8xl">
-                    {selected.icon}
-                  </div>
-                </div>
-              </div>
-              <div className="w-full md:w-1/2">
-                <h3 className="text-3xl font-bold">{selected.name}</h3>
-                <p className="text-2xl font-bold mb-2">{priceTotal}</p>
-                <p className="text-base md:text-lg mb-6 leading-relaxed">{selected.desc}</p>
-                <div className="space-y-1 mb-6 text-sm md:text-base">
-                  <p><strong>{selected.queima}</strong></p>
-                  <p><strong>{selected.tamanho}</strong></p>
-                  <p><strong>Matéria-prima:</strong> {selected.materiaPrima}</p>
-                </div>
-                  {/* Input de quantidade */}
-                  <div className="flex items-center bg-black text-white rounded-lg px-3 py-3 mb-2 justify-between w-full max-w-xs">
-                    <label htmlFor="quantidade" className="text-sm mr-2">Qtd:</label>
+    {collections.map((collection, index) => (
+      <div
+        key={collection.name}
+        className={`relative flex flex-col md:flex-row items-center ${
+          index % 2 !== 0 ? "md:flex-row-reverse" : ""
+        }`}
+      >
 
-                    <div className="flex items-center gap-2">
-                      {/* Botão de diminuir */}
-                      <button
-                        type="button"
-                        onClick={() => setProductLength(Math.max(1, productLength - 1))}
-                        className="bg-white text-black w-6 h-6 rounded-md flex items-center justify-center font-bold hover:opacity-80 transition"
-                      >
-                        –
-                      </button>
-
-                      <input
-                        type="number"
-                        name="quantidade"
-                        id="quantidade"
-                        min="1"
-                        value={productLength}
-                        onChange={(e) => setProductLength(Math.max(1, parseInt(e.target.value) || 1))}
-                        className="w-10 text-center bg-transparent text-white outline-none"
-                      />
-
-                      <button
-                        type="button"
-                        onClick={() => setProductLength(productLength + 1)}
-                        className="bg-white text-black w-6 h-6 rounded-md flex items-center justify-center font-bold hover:opacity-80 transition"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-
-
-                  {/* Botão de compra */}
-                  <button
-                    onClick={() => {
-                      const phone = "5511964511999";
-                      const msg = `Olá! Tenho interesse em ${productLength} vela(s) (${priceTotal}), de ${selected.name}.`;
-                      const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
-                      window.open(url, "_blank");
-                    }}
-                    className="flex items-center justify-center gap-2 bg-black text-white px-8 py-3 rounded-lg hover:opacity-90 transition w-full max-w-xs"
-                  >
-                    <ShoppingBag className="w-5 h-5" />
-                    Fazer pedido
-                  </button>
-              </div>
-            </div>
-          </div>
+        {/* IMAGEM GRANDE "VAZANDO" */}
+        <div className="w-full md:w-1/2 relative">
+          <img
+            src={collection.image}
+            alt={collection.name}
+            className="w-[80%] md:w-[90%] max-w-none object-cover opacity-90
+                       transition duration-700 ease-out
+                       group-hover:scale-[1.03]"
+          />
         </div>
-      </section>
+
+        {/* TEXTO */}
+        <div className="w-full md:w-1/2 max-w-md z-10
+                        opacity-0 translate-y-6
+                        animate-fade-up">
+          
+          <h3 className="text-3xl md:text-4xl font-semibold mb-4">
+            {collection.name}
+          </h3>
+
+          <p className="text-gray-600 text-base md:text-lg leading-relaxed mb-8">
+            {collection.desc}
+          </p>
+
+          <button
+            onClick={() => {
+              const phone = "5511964511999";
+              const msg = collection.active
+                ? `Olá! Tenho interesse na coleção ${collection.name}.`
+                : `Olá! Gostaria de encomendar itens da coleção ${collection.name}.`;
+
+              const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+              window.open(url, "_blank");
+            }}
+            className="border border-black px-6 py-3 rounded-lg 
+                       hover:bg-black hover:text-white 
+                       transition duration-300"
+          >
+            {collection.active ? "Comprar" : "Encomendar"}
+          </button>
+        </div>
+
+      </div>
+    ))}
+  </div>
+</section>
 
       {/* Contato
       <section id="contato" className="bg-black text-white py-16 px-4 md:px-16">
@@ -515,7 +535,7 @@ export default function App() {
       </section> */}
 
       {/* Suporte */}
-      <section id="suporte" className="py-12 px-4 text-center border-t bg-black text-white">
+      <section id="suporte" className="py-12 px-4  text-center border-t bg-black text-white">
         <div className="flex flex-col md:flex-row items-center justify-center gap-2 text-base md:text-lg">
           <span className="font-bold">Suporte</span>
           <span className="hidden md:inline">|</span>
