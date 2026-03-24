@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {  Sparkles,  ShoppingBag, Menu, X, Mail, Phone, Youtube, Instagram } from "lucide-react";
 import { Typewriter } from "./components/Typing/typing";
 import CascaBaunilha from "./assets/casca-baunilha.png";
@@ -165,9 +165,37 @@ export default function App() {
     (script as HTMLScriptElement).textContent = JSON.stringify(structuredData);
   }, []);
 
+
+
   
   const [menuOpen, setMenuOpen] = useState(false);
-  
+  const [visible, setVisible] = useState(false);
+  const [,setTyped] = useState(false);
+  const [showContent, setShowContent] = useState(false);
+  const sectionRef = useRef(null);
+
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+
+          // tempo do typing (mais lento)
+          setTimeout(() => setTyped(true), 3500);
+
+          // conteúdo aparece depois
+          setTimeout(() => setShowContent(true), 3500);
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    if (sectionRef.current) observer.observe(sectionRef.current);
+
+    return () => observer.disconnect();
+  }, []);
+    
   // const products = [
   //   {
   //     name: "Pinheiro de Inverno - Baunilha",
@@ -266,6 +294,15 @@ export default function App() {
   
   const collections = [
     {
+      name: "Dessert Collection",
+      desc: "A doçura se revela de forma sofisticada, criando uma atmosfera acolhedora, marcante e irresistivelmente confortável.",
+      image: Dessert,
+      active: true,
+      highlight: true,
+      price: "A partir de R$45",
+      badge: "Lançamento"
+    },
+    {
       name: "First Collection",
       desc: "Uma expressão pura da essência Ofir, com formas, aromas e intenções que deram origem a uma identidade construída com sensibilidade e propósito.",
       image: FirstCollection,
@@ -276,12 +313,6 @@ export default function App() {
       desc: "Notas suaves e envolventes que evocam a leveza do inverno e a elegância dos momentos mais íntimos.",
       image: SnowToy,
       active: false
-    },
-    {
-      name: "Dessert Collection",
-      desc: "A doçura se revela de forma sofisticada, criando uma atmosfera acolhedora, marcante e irresistivelmente confortável.",
-      image: Dessert,
-      active: true
     }
   ];
 
@@ -346,18 +377,25 @@ export default function App() {
             OFIR.
           </h1>
 
+          <p className="text-sm font-bold mt-4 opacity-80 animate-fade-up">
+            Tesouros em formato de velas
+          </p>
+
           <p className="text-lg md:text-2xl mb-6 md:mb-8 max-w-sm md:max-w-lg opacity-0 animate-delay-1">
-            <span className="font-semibold">Tesouros</span> em formato de{" "}
+            <span className="font-semibold">Nova Dessert Collection</span> disponível{" "}
             <span className="font-semibold">
-              <Typewriter text="velas" />
+              <Typewriter text="Hoje" />
             </span>
           </p>
+
 
           <a href="#catalogo">
             <button className="bg-black text-white px-6 py-3 md:px-8 rounded-md opacity-0 animate-delay-2 hover:opacity-90 transition">
               Saiba mais
             </button>
           </a>
+
+
         </div>
 
         {/* IMAGENS */}
@@ -379,7 +417,76 @@ export default function App() {
 
       </section>
 
+      <section ref={sectionRef} className="bg-white relative">
 
+        {/* FAIXA PRETA FULL WIDTH */}
+        <div
+          className={`
+            w-full bg-black text-white flex justify-center items-center
+            transition-all duration-[1200ms] ease-in-out
+            ${visible ? "h-40 md:h-52" : "h-0 overflow-hidden"}
+          `}
+        >
+          <h2 className="text-4xl md:text-6xl font-semibold tracking-wide">
+            {visible && <Typewriter text="LANÇAMENTO" />}
+          </h2>
+        </div>
+
+        {/* CONTEÚDO */}
+        <div
+          className={`
+            max-w-6xl mx-auto py-20 px-4 md:px-16
+            flex flex-col md:flex-row items-center gap-10
+            transition-all duration-[1200ms] ease-out
+            ${showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
+          `}
+        >
+
+          {/* IMAGEM */}
+          <div className="w-full md:w-1/2 flex justify-center">
+            <img
+              src={Dessert}
+              alt="Dessert Collection"
+              className="w-[90%] md:w-[95%] object-contain scale-105 transition duration-[1500ms]"
+            />
+          </div>
+
+          {/* TEXTO */}
+          <div className="w-full md:w-1/2 max-w-md">
+
+            <h2 className="text-4xl md:text-6xl font-semibold mb-4">
+              Dessert Collection
+            </h2>
+
+            <p className="text-gray-600 text-base md:text-lg leading-relaxed mb-6">
+              A doçura se revela de forma sofisticada, criando uma atmosfera acolhedora,
+              marcante e irresistivelmente confortável.
+            </p>
+
+            <p className="text-lg md:text-xl font-medium mb-4">
+              Peças a partir de R$45
+            </p>
+
+            <p className="text-sm text-gray-500 mb-8">
+              Disponível por tempo limitado
+            </p>
+
+            <button
+              onClick={() => {
+                const url = `https://wa.me/5511964511999?text=${encodeURIComponent(
+                  "Olá! Quero garantir uma vela da Dessert Collection."
+                )}`;
+                window.open(url, "_blank");
+              }}
+              className="bg-black text-white px-8 py-3 rounded-lg hover:opacity-90 transition"
+            >
+              Quero garantir a minha
+            </button>
+
+          </div>
+
+        </div>
+      </section>
 
       {/* Sobre */}
       <section id="sobre" className="relative bg-black text-white py-24 px-4 md:px-16 overflow-hidden z-0">
@@ -438,63 +545,95 @@ export default function App() {
       </section>
 
       {/* Catálogo */}
-<section id="catalogo" className="bg-white py-10 px-4 md:px-16 overflow-hidden">
-  <div className="max-w-6xl mx-auto space-y-10">
+      <section id="catalogo" className="bg-white py-10 px-4 md:px-16 overflow-hidden">
+        <div className="max-w-6xl mx-auto space-y-16">
 
-    {collections.map((collection, index) => (
-      <div
-        key={collection.name}
-        className={`relative flex flex-col md:flex-row items-center ${
-          index % 2 !== 0 ? "md:flex-row-reverse" : ""
-        }`}
-      >
+          {collections.map((collection, index) => (
+            <div
+              key={collection.name}
+              className={`relative flex flex-col md:flex-row items-center ${
+                index % 2 !== 0 ? "md:flex-row-reverse" : ""
+              } ${collection.highlight ? "mb-20" : ""}`}
+            >
 
-        {/* IMAGEM GRANDE "VAZANDO" */}
-        <div className="w-full md:w-1/2 relative">
-          <img
-            src={collection.image}
-            alt={collection.name}
-            className="w-[80%] md:w-[90%] max-w-none object-cover opacity-90
-                       transition duration-700 ease-out
-                       group-hover:scale-[1.03]"
-          />
+              {/* IMAGEM */}
+              <div className="w-full md:w-1/2 relative flex justify-center">
+                <img
+                  src={collection.image}
+                  alt={collection.name}
+                  className={`w-[85%] md:w-[95%] object-contain transition duration-700 ${
+                    collection.highlight ? "scale-105" : ""
+                  }`}
+                />
+              </div>
+
+              {/* TEXTO */}
+              <div className="w-full md:w-1/2 max-w-md z-10 mt-8 md:mt-0
+                              opacity-0 translate-y-6 animate-fade-up">
+
+                {/* BADGE */}
+                {collection.badge && (
+                  <span className="inline-block mb-3 text-xs tracking-widest uppercase text-gray-500">
+                    {collection.badge}
+                  </span>
+                )}
+
+                {/* TITULO */}
+                <h3 className={`font-semibold mb-4 ${
+                  collection.highlight ? "text-4xl md:text-5xl" : "text-3xl md:text-4xl"
+                }`}>
+                  {collection.name}
+                </h3>
+
+                {/* DESCRIÇÃO */}
+                <p className="text-gray-600 text-base md:text-lg leading-relaxed mb-6">
+                  {collection.desc}
+                </p>
+
+                {/* PREÇO (premium, sem parecer loja) */}
+                {collection.price && (
+                  <p className="text-lg md:text-xl font-medium mb-4">
+                    {collection.price}
+                  </p>
+                )}
+
+                {/* GATILHO */}
+                {collection.highlight && (
+                  <p className="text-sm text-gray-500 mb-6">
+                    Disponível por tempo limitado
+                  </p>
+                )}
+
+                {/* BOTÃO */}
+                <button
+                  onClick={() => {
+                    const phone = "5511964511999";
+                    const msg = collection.highlight
+                      ? `Olá! Quero garantir uma vela da Dessert Collection.`
+                      : collection.active
+                      ? `Olá! Tenho interesse na coleção ${collection.name}.`
+                      : `Olá! Gostaria de encomendar itens da coleção ${collection.name}.`;
+
+                    const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+                    window.open(url, "_blank");
+                  }}
+                  className="border border-black px-6 py-3 rounded-lg 
+                            hover:bg-black hover:text-white 
+                            transition duration-300"
+                >
+                  {collection.highlight
+                    ? "Quero garantir a minha"
+                    : collection.active
+                    ? "Comprar"
+                    : "Encomendar"}
+                </button>
+
+              </div>
+            </div>
+          ))}
+
         </div>
-
-        {/* TEXTO */}
-        <div className="w-full md:w-1/2 max-w-md z-10
-                        opacity-0 translate-y-6
-                        animate-fade-up">
-          
-          <h3 className="text-3xl md:text-4xl font-semibold mb-4">
-            {collection.name}
-          </h3>
-
-          <p className="text-gray-600 text-base md:text-lg leading-relaxed mb-8">
-            {collection.desc}
-          </p>
-
-          <button
-            onClick={() => {
-              const phone = "5511964511999";
-              const msg = collection.active
-                ? `Olá! Tenho interesse na coleção ${collection.name}.`
-                : `Olá! Gostaria de encomendar itens da coleção ${collection.name}.`;
-
-              const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
-              window.open(url, "_blank");
-            }}
-            className="border border-black px-6 py-3 rounded-lg 
-                       hover:bg-black hover:text-white 
-                       transition duration-300"
-          >
-            {collection.active ? "Comprar" : "Encomendar"}
-          </button>
-        </div>
-
-      </div>
-    ))}
-  </div>
-</section>
+      </section>
 
       {/* Contato
       <section id="contato" className="bg-black text-white py-16 px-4 md:px-16">
