@@ -185,7 +185,7 @@ export default function App() {
           setTimeout(() => setTyped(true), 3500);
 
           // conteúdo aparece depois
-          setTimeout(() => setShowContent(true), 3500);
+          setTimeout(() => setShowContent(true), 1500);
         }
       },
       { threshold: 0.3 }
@@ -435,7 +435,7 @@ export default function App() {
         {/* CONTEÚDO */}
         <div
           className={`
-            max-w-6xl mx-auto py-20 px-4 md:px-16
+            max-w-6xl mx-auto py-4 px-4 md:px-16
             flex flex-col md:flex-row items-center gap-10
             transition-all duration-[1200ms] ease-out
             ${showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
@@ -463,8 +463,8 @@ export default function App() {
               marcante e irresistivelmente confortável.
             </p>
 
-            <p className="text-lg md:text-xl font-medium mb-4">
-              Peças a partir de R$45
+            <p className="text-lg md:text-xl font-medium ">
+              A partir de R$45
             </p>
 
             <p className="text-sm text-gray-500 mb-8">
