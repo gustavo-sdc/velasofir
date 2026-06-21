@@ -6,8 +6,11 @@ import Maracuja from "./assets/maracuja.png";
 import CestoMorango from "./assets/cesto-morango.png";
 import VideoBackgroundOfir from "./assets/video-background-ofir.mp4";
 import { useProducts } from "./context/ProductsContext";
+import { useNavigate } from "react-router-dom";
 
 export default function App() {
+    const navigate = useNavigate();
+
     useEffect(() => {
     // SEO Meta Tags
     document.title = "Ofir Velas | Velas Aromáticas Artesanais | Chá Branco, Capim Limão, Morango e Baunilha";
@@ -147,9 +150,18 @@ export default function App() {
         <div className="flex justify-between items-center py-4 px-4 md:px-12">
           {/* Desktop Nav */}
           <nav className="hidden md:flex gap-6 text-sm">
-            <a href="#" className="hover:opacity-60 transition">Inicio</a>
-            <a href="#sobre" className="hover:opacity-60 transition">Sobre</a>
-            <a href="/catalogo" className="hover:opacity-60 transition">Catálogo</a>
+            <a href="#" className="hover:opacity-60 transition" onClick={(e) => {
+              e.preventDefault();
+              navigate("/");
+            }}>Inicio</a>
+            <a href="#sobre" className="hover:opacity-60 transition" onClick={(e) => {
+              e.preventDefault();
+              navigate("/sobre");
+            }}>Sobre</a>
+            <a href="/catalogo" className="hover:opacity-60 transition" onClick={(e) => {
+              e.preventDefault();
+              navigate("/catalogo");
+            }}>Catálogo</a>
             <a href="https://wa.me/5511964511999?text=Ol%C3%A1%2C%20gostaria%20de%20realizar%20uma%20compra." target="_blank" className="hover:opacity-60 transition">Contato</a>
             <a href="https://youtube.com/@velasofir" target="_blank" className="hover:opacity-60 transition">Suporte</a>
           </nav>
@@ -171,10 +183,26 @@ export default function App() {
         {/* Mobile Nav */}
         {menuOpen && (
           <nav className="md:hidden flex flex-col gap-4 p-4 bg-white border-t">
-            <a href="#" className="hover:opacity-60 transition" onClick={() => setMenuOpen(false)}>Início</a>
-            <a href="#sobre" className="hover:opacity-60 transition" onClick={() => setMenuOpen(false)}>Sobre</a>
-            <a href="/catalogo" className="hover:opacity-60 transition" onClick={() => setMenuOpen(false)}>Catálogo</a>
-            <a href="#suporte" className="hover:opacity-60 transition" onClick={() => setMenuOpen(false)}>Suporte</a>
+            <a href="#" className="hover:opacity-60 transition" onClick={(e) => {
+              e.preventDefault();
+              navigate("/");
+              setMenuOpen(false);
+            }}>Início</a>
+            <a href="#sobre" className="hover:opacity-60 transition" onClick={(e) => {
+              e.preventDefault();
+              navigate("/sobre");
+              setMenuOpen(false);
+            }}>Sobre</a>
+            <a href="/catalogo" className="hover:opacity-60 transition" onClick={(e) => {
+              e.preventDefault();
+              navigate("/catalogo");
+              setMenuOpen(false);
+            }}>Catálogo</a>
+            <a href="#suporte" className="hover:opacity-60 transition" onClick={(e) => {
+              e.preventDefault();
+              navigate("/suporte");
+              setMenuOpen(false);
+            }}>Suporte</a>
             <button className="flex items-center justify-center gap-2 rounded-lg px-5 py-2 hover:bg-black hover:text-white transition">
               <ShoppingBag className="w-4 h-4" onClick={()=> window.location.href="https://wa.me/5511964511999?text=Ol%C3%A1%2C%20gostaria%20de%20realizar%20uma%20compra."} />
               Comprar

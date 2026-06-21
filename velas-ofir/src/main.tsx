@@ -15,7 +15,6 @@ ReactDOM.createRoot(root).render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/catalogo" element={<Catalogo />} />
-        {/* URL não-óbvia, sem link visível em nenhum menu do site */}
         <Route path="/admin-velas-2024" element={<Admin />} />
       </Routes>
     </BrowserRouter>

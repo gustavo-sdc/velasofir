@@ -1,7 +1,7 @@
 import { useEffect , useState } from "react";
 import {  Sparkles,  ShoppingBag, Menu, X, Mail, Phone, Youtube, Instagram, Check, Clock } from "lucide-react";
 import { supabase } from "../lib/supabase";
-
+import { useNavigate } from "react-router-dom";
 
 type ProductStatus = "disponivel" | "encomenda";
 
@@ -45,6 +45,7 @@ export default function Catalogo() {
     const [activeFilter, setActiveFilter] = useState<FilterValue>("todos");
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
             // SEO Meta Tags
@@ -203,9 +204,18 @@ export default function Catalogo() {
           
           {/* Desktop Nav */}
           <nav className="hidden md:flex gap-6 text-sm">
-            <a href="#" className="hover:opacity-60 transition">Início</a>
-            <a href="#sobre" className="hover:opacity-60 transition">Sobre</a>
-            <a href="#catalogo" className="hover:opacity-60 transition">Catálogo</a>
+            <a href="#" className="hover:opacity-60 transition" onClick={(e) => {
+              e.preventDefault();
+              navigate("/");
+            }}>Início</a>
+            <a href="#sobre" className="hover:opacity-60 transition" onClick={(e) => {
+              e.preventDefault();
+              navigate("/sobre");
+            }}>Sobre</a>
+            <a href="#catalogo" className="hover:opacity-60 transition" onClick={(e) => {
+              e.preventDefault();
+              navigate("/catalogo");
+            }}>Catálogo</a>
             <a href="https://wa.me/5511964511999?text=Ol%C3%A1%2C%20gostaria%20de%20realizar%20uma%20compra." target="_blank" className="hover:opacity-60 transition">Contato</a>
             <a href="https://youtube.com/@velasofir" target="_blank" className="hover:opacity-60 transition">Suporte</a>
           </nav>
@@ -229,7 +239,7 @@ export default function Catalogo() {
           <nav className="md:hidden flex flex-col gap-4 p-4 bg-white border-t">
             <a href="#" className="hover:opacity-60 transition" onClick={() => setMenuOpen(false)}>Início</a>
             <a href="#sobre" className="hover:opacity-60 transition" onClick={() => setMenuOpen(false)}>Sobre</a>
-            <a href="/catalogo" className="hover:opacity-60 transition" onClick={() => setMenuOpen(false)}>Catálogo</a>
+            <a onClick={() => { navigate("/catalogo"); setMenuOpen(false); }} className="hover:opacity-60 transition">Catálogo</a>
             <a href="#suporte" className="hover:opacity-60 transition" onClick={() => setMenuOpen(false)}>Suporte</a>
             <button className="flex items-center justify-center gap-2 rounded-lg px-5 py-2 hover:bg-black hover:text-white transition">
               <ShoppingBag className="w-4 h-4" onClick={()=> window.location.href="https://wa.me/5511964511999?text=Ol%C3%A1%2C%20gostaria%20de%20realizar%20uma%20compra."} />
