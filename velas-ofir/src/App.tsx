@@ -272,7 +272,7 @@ export default function App() {
         {featured && (
           <div
             className={`
-              max-w-6xl mx-auto py-4 px-4 md:px-16
+              max-w-6xl mx-auto py-4 px-4 md:px-16 m-5
               flex flex-col md:flex-row items-center gap-10
               transition-all duration-1200 ease-out
               ${showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
@@ -282,11 +282,13 @@ export default function App() {
             {/* IMAGEM */}
             <div className="w-full md:w-1/2 flex justify-center">
               {featured.image ? (
-                <img
-                  src={featured.image}
-                  alt={featured.name}
-                  className="w-[90%] md:w-[95%] object-contain scale-105 transition duration-1500"
-                />
+                <div className="w-[90%] md:w-[95%] aspect-square overflow-hidden rounded-lg">
+                  <img
+                    src={featured.image}
+                    alt={featured.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               ) : (
                 <div className="w-[90%] md:w-[95%] aspect-square bg-gray-50 rounded-lg flex items-center justify-center text-gray-400 text-sm">
                   Foto em breve
@@ -364,7 +366,7 @@ export default function App() {
 
             <p>
               Sempre gostei de criar, de entender como as coisas funcionam e de conquistar o que eu imaginava. 
-              Durante a pandemia, aos 18 anos, transformei meu tempo livre em um pequeno grande passo: criei minha primeira loja online de miçangas, onde descobri o prazer de dar forma às ideias.
+              Durante a pandemia, aos 15 anos, transformei meu tempo livre em um pequeno grande passo: criei minha primeira loja online de miçangas, onde descobri o prazer de dar forma às ideias.
             </p>
 
             <p>
@@ -404,17 +406,20 @@ export default function App() {
               >
 
                 {/* IMAGEM */}
-                <div className="w-full md:w-1/2 relative flex justify-center">
-                  {collection.image ? (
-                    <img
-                      src={collection.image}
-                      alt={collection.name}
-                      className={`w-[85%] md:w-[95%] object-contain transition duration-700 ${
-                        collection.highlight ? "scale-105" : ""
-                      }`}
-                    />
+
+
+                {/* IMAGEM */}
+                <div className="w-full md:w-1/2 flex justify-center">
+                  {featured.image ? (
+                    <div className="w-[90%] md:w-[95%] aspect-square overflow-hidden rounded-lg">
+                      <img
+                        src={featured.image}
+                        alt={featured.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                   ) : (
-                    <div className="w-[85%] md:w-[95%] aspect-square bg-gray-50 rounded-lg flex items-center justify-center text-gray-400 text-sm">
+                    <div className="w-[90%] md:w-[95%] aspect-square bg-gray-50 rounded-lg flex items-center justify-center text-gray-400 text-sm">
                       Foto em breve
                     </div>
                   )}

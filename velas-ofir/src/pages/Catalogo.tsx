@@ -291,33 +291,33 @@ export default function Catalogo() {
 
                     {/* IMAGEM */}
                     <div className="relative w-full aspect-square bg-gray-50 rounded-lg mb-5 flex items-center justify-center overflow-hidden">
-                    {product.image ? (
+                      {product.image ? (
                         <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-[75%] h-[75%] object-contain transition duration-500 group-hover:scale-105"
+                          src={product.image}
+                          alt={product.name}
+                          className="w-full h-full object-cover transition duration-500 group-hover:scale-105"
                         />
-                    ) : (
+                      ) : (
                         <span className="text-xs text-gray-400 tracking-widest uppercase">
-                        Foto em breve
+                          Foto em breve
                         </span>
-                    )}
+                      )}
 
-                    {/* STATUS BADGE */}
-                    <span
+                      {/* STATUS BADGE */}
+                      <span
                         className={`absolute top-3 left-3 inline-flex items-center gap-1 text-[11px] tracking-wide uppercase px-3 py-1 rounded-full ${
-                        product.status === "disponivel"
+                          product.status === "disponivel"
                             ? "bg-black text-white"
                             : "bg-white text-black border border-black"
                         }`}
-                    >
+                      >
                         {product.status === "disponivel" ? (
-                        <Check className="w-3 h-3" />
+                          <Check className="w-3 h-3" />
                         ) : (
-                        <Clock className="w-3 h-3" />
+                          <Clock className="w-3 h-3" />
                         )}
                         {STATUS_LABEL[product.status]}
-                    </span>
+                      </span>
                     </div>
 
                     {/* COLEÇÃO (TAG) */}
