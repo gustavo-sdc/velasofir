@@ -1,10 +1,23 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import ReactDOM from "react-dom/client";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import App from "./App";
+import Catalogo from "./pages/Catalogo";
+import Admin from "./pages/Admin";
+import { ProductsProvider } from "./context/ProductsContext";
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+import "./index.css";
+
+const root = document.getElementById("root")!;
+
+ReactDOM.createRoot(root).render(
+  <ProductsProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<App />} />
+        <Route path="/catalogo" element={<Catalogo />} />
+        {/* URL não-óbvia, sem link visível em nenhum menu do site */}
+        <Route path="/admin-velas-2024" element={<Admin />} />
+      </Routes>
+    </BrowserRouter>
+  </ProductsProvider>
+);
