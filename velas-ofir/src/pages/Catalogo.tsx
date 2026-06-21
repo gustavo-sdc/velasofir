@@ -162,7 +162,7 @@ export default function Catalogo() {
             }
             (script as HTMLScriptElement).textContent = JSON.stringify(structuredData);
         }, 
-    []);
+      [products]);
 
 
     useEffect(() => {

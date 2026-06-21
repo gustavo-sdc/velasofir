@@ -249,7 +249,7 @@ export default function App() {
         <div
           className={`
             w-full bg-black text-white flex justify-center items-center
-            transition-all duration-[1200ms] ease-in-out
+            transition-all duration-1200 ease-in-out
             ${visible ? "h-40 md:h-52" : "h-0 overflow-hidden"}
           `}
         >
@@ -264,7 +264,7 @@ export default function App() {
             className={`
               max-w-6xl mx-auto py-4 px-4 md:px-16
               flex flex-col md:flex-row items-center gap-10
-              transition-all duration-[1200ms] ease-out
+              transition-all duration-1200 ease-out
               ${showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
             `}
           >
@@ -275,7 +275,7 @@ export default function App() {
                 <img
                   src={featured.image}
                   alt={featured.name}
-                  className="w-[90%] md:w-[95%] object-contain scale-105 transition duration-[1500ms]"
+                  className="w-[90%] md:w-[95%] object-contain scale-105 transition duration-1500"
                 />
               ) : (
                 <div className="w-[90%] md:w-[95%] aspect-square bg-gray-50 rounded-lg flex items-center justify-center text-gray-400 text-sm">
