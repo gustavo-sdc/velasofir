@@ -150,14 +150,8 @@ export default function App() {
         <div className="flex justify-between items-center py-4 px-4 md:px-12">
           {/* Desktop Nav */}
           <nav className="hidden md:flex gap-6 text-sm">
-            <a href="#" className="hover:opacity-60 transition" onClick={(e) => {
-              e.preventDefault();
-              navigate("/");
-            }}>Inicio</a>
-            <a href="#sobre" className="hover:opacity-60 transition" onClick={(e) => {
-              e.preventDefault();
-              navigate("/sobre");
-            }}>Sobre</a>
+            <a href="#" className="hover:opacity-60 transition">Inicio</a>
+            <a href="#sobre" className="hover:opacity-60 transition">Sobre</a>
             <a href="/catalogo" className="hover:opacity-60 transition" onClick={(e) => {
               e.preventDefault();
               navigate("/catalogo");
@@ -183,26 +177,14 @@ export default function App() {
         {/* Mobile Nav */}
         {menuOpen && (
           <nav className="md:hidden flex flex-col gap-4 p-4 bg-white border-t">
-            <a href="#" className="hover:opacity-60 transition" onClick={(e) => {
-              e.preventDefault();
-              navigate("/");
-              setMenuOpen(false);
-            }}>Início</a>
-            <a href="#sobre" className="hover:opacity-60 transition" onClick={(e) => {
-              e.preventDefault();
-              navigate("/sobre");
-              setMenuOpen(false);
-            }}>Sobre</a>
+            <a href="#" className="hover:opacity-60 transition">Início</a>
+            <a href="#sobre" className="hover:opacity-60 transition" >Sobre</a>
             <a href="/catalogo" className="hover:opacity-60 transition" onClick={(e) => {
               e.preventDefault();
               navigate("/catalogo");
               setMenuOpen(false);
             }}>Catálogo</a>
-            <a href="#suporte" className="hover:opacity-60 transition" onClick={(e) => {
-              e.preventDefault();
-              navigate("/suporte");
-              setMenuOpen(false);
-            }}>Suporte</a>
+            <a href="#suporte" className="hover:opacity-60 transition">Suporte</a>
             <button className="flex items-center justify-center gap-2 rounded-lg px-5 py-2 hover:bg-black hover:text-white transition">
               <ShoppingBag className="w-4 h-4" onClick={()=> window.location.href="https://wa.me/5511964511999?text=Ol%C3%A1%2C%20gostaria%20de%20realizar%20uma%20compra."} />
               Comprar
