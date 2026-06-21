@@ -147,7 +147,7 @@ export default function App() {
         <div className="flex justify-between items-center py-4 px-4 md:px-12">
           {/* Desktop Nav */}
           <nav className="hidden md:flex gap-6 text-sm">
-            <a href="#" className="hover:opacity-60 transition">Início</a>
+            <a href="#" className="hover:opacity-60 transition">Inicio</a>
             <a href="#sobre" className="hover:opacity-60 transition">Sobre</a>
             <a href="/catalogo" className="hover:opacity-60 transition">Catálogo</a>
             <a href="https://wa.me/5511964511999?text=Ol%C3%A1%2C%20gostaria%20de%20realizar%20uma%20compra." target="_blank" className="hover:opacity-60 transition">Contato</a>
