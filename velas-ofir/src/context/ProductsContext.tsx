@@ -58,7 +58,7 @@ function fromRow(row: Record<string, unknown>): Product {
     id: row.id as string,
     name: (row.name as string) ?? "",
     collection: (row.collection as string) ?? "",
-    desc: (row.description as string) ?? "",
+    description: (row.description as string) ?? "",
     queima: (row.queima as string) ?? "",
     tamanho: (row.tamanho as string) ?? "",
     materiaPrima: (row.materia_prima as string) ?? "",
