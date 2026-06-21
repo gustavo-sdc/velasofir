@@ -3,7 +3,7 @@ import {  Sparkles,  ShoppingBag, Menu, X, Mail, Phone, Youtube, Instagram } fro
 import { Typewriter } from "./components/Typing/typing";
 import CascaBaunilha from "./assets/casca-baunilha.png";
 import Maracuja from "./assets/maracuja.png";
-import CestoMorango from "./assets/cesto-morango.png";
+import ChaBranco from "./assets/cha-branco.png";
 import VideoBackgroundOfir from "./assets/video-background-ofir.mp4";
 import { useProducts } from "./context/ProductsContext";
 import { useNavigate } from "react-router-dom";
@@ -246,7 +246,7 @@ export default function App() {
           </div>
 
           <div className="absolute top-0 right-0 w-40 md:w-[24vw] animate-float [animation-delay:2s]">
-            <img src={CestoMorango} className="w-full h-auto object-contain drop-shadow-xl"/>
+            <img src={ChaBranco} className="w-full h-auto object-contain drop-shadow-xl"/>
           </div>
 
         </div>
