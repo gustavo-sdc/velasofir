@@ -6,6 +6,7 @@ import Admin from "./pages/Admin";
 import { ProductsProvider } from "./context/ProductsContext";
 
 import "./index.css";
+import Sorteador from "./pages/Sorteador";
 
 const root = document.getElementById("root")!;
 
@@ -16,6 +17,7 @@ ReactDOM.createRoot(root).render(
         <Route path="/" element={<App />} />
         <Route path="/catalogo" element={<Catalogo />} />
         <Route path="/admin-velas-2024" element={<Admin />} />
+        <Route path="/sorteador" element={<Sorteador />} />
       </Routes>
     </BrowserRouter>
   </ProductsProvider>

@@ -1,15 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import {  Sparkles,  ShoppingBag, Menu, X, Mail, Phone, Youtube, Instagram } from "lucide-react";
+import {  Sparkles,  ShoppingBag, Mail, Phone, Youtube, Instagram } from "lucide-react";
 import { Typewriter } from "./components/Typing/typing";
 import CascaBaunilha from "./assets/casca-baunilha.png";
 import Maracuja from "./assets/maracuja.png";
 import ChaBranco from "./assets/cha-branco.png";
 import VideoBackgroundOfir from "./assets/video-background-ofir.mp4";
 import { useProducts } from "./context/ProductsContext";
-import { useNavigate } from "react-router-dom";
+import Header from "./components/Header/Header";
 
 export default function App() {
-    const navigate = useNavigate();
 
     useEffect(() => {
     // SEO Meta Tags
@@ -108,7 +107,6 @@ export default function App() {
   }, []);
 
 
-  const [menuOpen, setMenuOpen] = useState(false);
   const [visible, setVisible] = useState(false);
   const [,setTyped] = useState(false);
   const [showContent, setShowContent] = useState(false);
@@ -146,52 +144,7 @@ export default function App() {
       `}</style>
 
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 bg-white z-50 border-b border-gray-50 ">
-        <div className="flex justify-between items-center py-4 px-4 md:px-12">
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex gap-6 text-sm">
-            <a href="#" className="hover:opacity-60 transition">Inicio</a>
-            <a href="#sobre" className="hover:opacity-60 transition">Sobre</a>
-            <a href="/catalogo" className="hover:opacity-60 transition" onClick={(e) => {
-              e.preventDefault();
-              navigate("/catalogo");
-            }}>Catálogo</a>
-            <a href="https://wa.me/5511964511999?text=Ol%C3%A1%2C%20gostaria%20de%20realizar%20uma%20compra." target="_blank" className="hover:opacity-60 transition">Contato</a>
-            <a href="https://youtube.com/@velasofir" target="_blank" className="hover:opacity-60 transition">Suporte</a>
-          </nav>
-
-          <button className="hidden md:flex items-center gap-2 border border-black rounded-lg px-5 py-2 hover:bg-black hover:text-white transition" onClick={() => window.open("https://wa.me/5511964511999?text=Ol%C3%A1%2C%20gostaria%20de%20realizar%20uma%20compra.", "_blank")}>
-            <ShoppingBag className="w-4 h-4" onClick={()=> window.location.href="https://wa.me/5511964511999?text=Ol%C3%A1%2C%20gostaria%20de%20realizar%20uma%20compra."} />
-            Comprar
-          </button>
-
-          {/* Mobile Menu Button */}
-          <button 
-            className="md:hidden"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-
-        {/* Mobile Nav */}
-        {menuOpen && (
-          <nav className="md:hidden flex flex-col gap-4 p-4 bg-white border-t">
-            <a href="#" className="hover:opacity-60 transition">Início</a>
-            <a href="#sobre" className="hover:opacity-60 transition" >Sobre</a>
-            <a href="/catalogo" className="hover:opacity-60 transition" onClick={(e) => {
-              e.preventDefault();
-              navigate("/catalogo");
-              setMenuOpen(false);
-            }}>Catálogo</a>
-            <a href="#suporte" className="hover:opacity-60 transition">Suporte</a>
-            <button className="flex items-center justify-center gap-2 rounded-lg px-5 py-2 hover:bg-black hover:text-white transition">
-              <ShoppingBag className="w-4 h-4" onClick={()=> window.location.href="https://wa.me/5511964511999?text=Ol%C3%A1%2C%20gostaria%20de%20realizar%20uma%20compra."} />
-              Comprar
-            </button>
-          </nav>
-        )}
-      </header>
+      <Header/>
 
       {/* Spacer for fixed header */}
       <div className="h-16"></div>
@@ -393,6 +346,7 @@ export default function App() {
           {loading ? (
             <p className="text-center text-gray-400 py-10">Carregando coleções...</p>
           ) : collections.length === 0 ? (
+            console.log("🚀 ~ App ~ collections:", collections),
             <p className="text-center text-gray-400 py-10">
               Nenhuma coleção cadastrada ainda.
             </p>
