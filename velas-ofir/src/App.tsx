@@ -1,10 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import {  Sparkles,  ShoppingBag, Mail, Phone, Youtube, Instagram } from "lucide-react";
-import { Typewriter } from "./components/Typing/typing";
-import CascaBaunilha from "./assets/casca-baunilha.png";
-import Maracuja from "./assets/maracuja.png";
-import ChaBranco from "./assets/cha-branco.png";
-import VideoBackgroundOfir from "./assets/video-background-ofir.mp4";
 import { useProducts } from "./context/ProductsContext";
 import Header from "./components/Header/Header";
 

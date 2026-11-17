@@ -1,4 +1,8 @@
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22.14.0"
+
+# Next.js usa o adaptador automático da Netlify, sem rewrite de SPA.
