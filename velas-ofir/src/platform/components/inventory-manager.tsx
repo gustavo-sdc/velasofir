@@ -1,15 +1,18 @@
 "use client";
-import { useState, useEffect, useRef, type FormEvent } from "react";
+import { useState, useEffect, useRef, useCallback, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { money, slugify } from "../site";
 import type { TicketType } from "../domain/validation";
 import { WorkshopFields } from "./workshop-fields";
 import { ImageUpload } from "./image-upload";
+import { PaymentPreferenceField } from "./payment-preference-field";
+import { AdminToast } from "./admin-toast";
 export type ProductRow = {
   slug: string | null;
   description: string;
   collection: string;
   image: string;
+  images: string[];
   accepts_orders: boolean;
   id: string;
   name: string;
@@ -18,6 +21,7 @@ export type ProductRow = {
   stock_quantity: number | null;
   production_days: number | null;
   published: boolean;
+  payment_preference: string;
 };
 export type WorkshopRow = {
   youtube_videos: string[];
@@ -35,6 +39,7 @@ export type WorkshopRow = {
   title: string;
   starts_at: string;
   published: boolean;
+  payment_preference: string;
 };
 export function InventoryManager({
   products,
@@ -48,8 +53,14 @@ export function InventoryManager({
   section?: "products" | "stock" | "workshops";
 }) {
   const [message, setMessage] = useState("");
+  const [messageTone, setMessageTone] = useState<"success" | "error">("success");
   const [busy, setBusy] = useState(false);
   const router = useRouter();
+  const dismissToast = useCallback(() => setMessage(""), []);
+  function notify(text: string, tone: "success" | "error") {
+    setMessageTone(tone);
+    setMessage(text);
+  }
   const [productVersion, setProductVersion] = useState(0);
   const [editingProduct, setEditingProduct] = useState<ProductRow | null>(null);
   const productForm = useRef<HTMLFormElement>(null);
@@ -58,7 +69,12 @@ export function InventoryManager({
     const form = productForm.current;
     if (!form) return;
     form.reset();
-    if (!editingProduct) return;
+    if (!editingProduct) {
+      const preference = form.elements.namedItem("payment_preference");
+      if (preference instanceof HTMLSelectElement)
+        preference.value = "standard";
+      return;
+    }
     if (productDetails.current) productDetails.current.open = true;
     const values: Record<string, string | number | boolean> = {
       name: editingProduct.name,
@@ -72,6 +88,7 @@ export function InventoryManager({
       production_days: editingProduct.production_days ?? "",
       accepts_orders: editingProduct.accepts_orders,
       published: editingProduct.published,
+      payment_preference: editingProduct.payment_preference ?? "standard",
     };
     for (const [name, value] of Object.entries(values)) {
       const element = form.elements.namedItem(name);
@@ -81,6 +98,8 @@ export function InventoryManager({
         element instanceof HTMLInputElement ||
         element instanceof HTMLTextAreaElement
       )
+        element.value = String(value);
+      else if (element instanceof HTMLSelectElement)
         element.value = String(value);
     }
     form.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -92,6 +111,11 @@ export function InventoryManager({
     const form = workshopForm.current;
     if (!form) return;
     form.reset();
+    if (!editing) {
+      const preference = form.elements.namedItem("payment_preference");
+      if (preference instanceof HTMLSelectElement)
+        preference.value = "standard";
+    }
     if (editing) {
       if (workshopDetails.current) workshopDetails.current.open = true;
       const values: Record<string, string | boolean> = {
@@ -103,6 +127,7 @@ export function InventoryManager({
         includes: editing.includes.join("\n"),
         program: editing.program.join("\n"),
         published: editing.published,
+        payment_preference: editing.payment_preference ?? "standard",
         starts_at: new Date(
           new Date(editing.starts_at).getTime() - 3 * 60 * 60 * 1000,
         )
@@ -117,6 +142,8 @@ export function InventoryManager({
           element instanceof HTMLInputElement ||
           element instanceof HTMLTextAreaElement
         )
+          element.value = String(value);
+        else if (element instanceof HTMLSelectElement)
           element.value = String(value);
       }
       form.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -139,15 +166,17 @@ export function InventoryManager({
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error);
-      setMessage(
+      notify(
         published
           ? "Publicação retirada do site."
           : "Página publicada no site.",
+        "success",
       );
       router.refresh();
     } catch (error) {
-      setMessage(
+      notify(
         error instanceof Error ? error.message : "Não foi possível publicar.",
+        "error",
       );
     } finally {
       setBusy(false);
@@ -167,6 +196,7 @@ export function InventoryManager({
     if (kind === "product")
       payload = {
         ...data,
+        images: JSON.parse(String(data.images ?? "[]")) as string[],
         price: Number(data.price),
         stock_quantity:
           editingProduct && data.stock_quantity === ""
@@ -248,15 +278,17 @@ export function InventoryManager({
         setWorkshopVersion((v) => v + 1);
         setEditing(null);
       }
-      setMessage(
+      notify(
         result.path
           ? `Workshop salvo. Página gerada: ${result.path}${payload.published ? "" : " (rascunho; publique para disponibilizar)"}`
           : "Cadastro salvo.",
+        "success",
       );
       router.refresh();
     } catch (error) {
-      setMessage(
+      notify(
         error instanceof Error ? error.message : "Não foi possível salvar.",
+        "error",
       );
     } finally {
       setBusy(false);
@@ -277,11 +309,12 @@ export function InventoryManager({
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error);
-      setMessage("Estoque atualizado.");
+      notify("Estoque atualizado.", "success");
       router.refresh();
     } catch (error) {
-      setMessage(
+      notify(
         error instanceof Error ? error.message : "Não foi possível atualizar.",
+        "error",
       );
     } finally {
       setBusy(false);
@@ -296,9 +329,11 @@ export function InventoryManager({
         </p>
       )}
       {message && (
-        <p className="notice" role="status">
-          {message}
-        </p>
+        <AdminToast
+          message={message}
+          tone={messageTone}
+          onDismiss={dismissToast}
+        />
       )}
       <div className="admin-manager">
         {section !== "workshops" && (
@@ -423,11 +458,15 @@ export function InventoryManager({
                   <ImageUpload
                     key={`${editingProduct?.id ?? "new"}-${productVersion}`}
                     scope="product"
-                    maxImages={1}
+                    maxImages={8}
                     disabled={busy}
                     onUploading={setUploading}
                     initialImages={
-                      editingProduct?.image ? [editingProduct.image] : []
+                      editingProduct?.images?.length
+                        ? editingProduct.images
+                        : editingProduct?.image
+                          ? [editingProduct.image]
+                          : []
                     }
                   />
                   <label>
@@ -443,6 +482,11 @@ export function InventoryManager({
                       max="365"
                     />
                   </label>
+                  <PaymentPreferenceField
+                    defaultValue={
+                      editingProduct?.payment_preference ?? "standard"
+                    }
+                  />
                   <p className="small">
                     <label>
                       <input name="published" type="checkbox" /> Publicar no
@@ -539,7 +583,9 @@ export function InventoryManager({
                 <p className="notice">
                   Sua landing page será gerada automaticamente com título, foto,
                   programação, itens incluídos, data, local e contato para
-                  inscrição. Marque “Publicar no site” para disponibilizá-la.
+                  inscrição. Datas passadas são aceitas para registrar encontros
+                  já realizados. Marque “Publicar no site” para disponibilizar
+                  a página no histórico de workshops.
                 </p>
                 <label className="form-field">
                   Descrição
@@ -577,6 +623,9 @@ export function InventoryManager({
                   onUploading={setUploading}
                   initialTickets={editing?.ticket_types}
                   initialImages={editing?.images}
+                />
+                <PaymentPreferenceField
+                  defaultValue={editing?.payment_preference ?? "standard"}
                 />
                 <label className="form-field">
                   Vídeos do YouTube (opcional, um link por linha)

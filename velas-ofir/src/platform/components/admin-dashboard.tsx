@@ -23,14 +23,14 @@ import { money } from "../site";
 import type { Purchase } from "../server/admin-operations";
 import { BlogManager } from "./blog-manager";
 import type { BlogPost } from "../domain/blog";
-import { AsaasManager } from "./asaas-manager";
+import { CustomerOrdersManager } from "./customer-orders-manager";
 const sections = [
   ["overview", "Visão geral", LayoutDashboard],
   ["products", "Produtos", Package],
   ["stock", "Estoque", Boxes],
   ["workshops", "Workshops e páginas", CalendarDays],
   ["blog", "Blog e conteúdos", NotebookPen],
-  ["asaas", "Pedidos e ASAAS", CreditCard],
+  ["customer-orders", "Pedidos e entregas", CreditCard],
   ["orders", "Compras", ShoppingBag],
   ["registrations", "Inscrições", Users],
   ["returns", "Cancelamentos e devoluções", RotateCcw],
@@ -109,7 +109,7 @@ export function AdminDashboard({
               ([id]) =>
                 (id !== "blog" || editing) &&
                 (financial ||
-                  !["asaas", "orders", "registrations", "returns"].includes(
+                  !["customer-orders", "orders", "registrations", "returns"].includes(
                     id,
                   )),
             )
@@ -152,8 +152,8 @@ export function AdminDashboard({
             </div>
             <span className="small">Atualizado ao abrir o painel</span>
           </div>
-          {financial && section === "asaas" && (
-            <AsaasManager products={products} workshops={workshops} />
+          {financial && section === "customer-orders" && (
+            <CustomerOrdersManager />
           )}
           {section === "overview" && (
             <>
@@ -232,12 +232,7 @@ export function AdminDashboard({
                     Criar workshop e LP
                   </button>
                 </div>
-                <p className="small">
-                  Checkout desativado. Cancelamentos e reembolsos exibidos aqui
-                  vêm do histórico existente. Solicitações de devolução e
-                  participantes por turma ainda dependem do fluxo de pedidos e
-                  ingressos.
-                </p>
+                <p className="small">Pedidos pagos aparecem em Pedidos e entregas para atualização do preparo e envio.</p>
               </section>
             </>
           )}

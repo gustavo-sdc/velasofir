@@ -1,10 +1,11 @@
 "use client";
-import { useState, useRef, type FormEvent } from "react";
+import { useState, useRef, useCallback, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import type { BlogPost } from "../domain/blog";
 import { slugify } from "../site";
 import { ImageUpload } from "./image-upload";
 import { ArticleBody } from "./article-body";
+import { AdminToast } from "./admin-toast";
 export function BlogManager({
   posts,
   available,
@@ -17,9 +18,18 @@ export function BlogManager({
   );
   const [search, setSearch] = useState("");
   const [version, setVersion] = useState(0);
+  const [toast, setToast] = useState("");
   const router = useRouter();
+  const dismissToast = useCallback(() => setToast(""), []);
   return (
     <>
+      {toast && (
+        <AdminToast
+          message={toast}
+          tone="success"
+          onDismiss={dismissToast}
+        />
+      )}
       {!available && (
         <p className="notice" role="alert">
           Não foi possível carregar o blog. Confira a conexão antes de publicar.
@@ -104,6 +114,7 @@ export function BlogManager({
           onSaved={() => {
             setSelected(undefined);
             setVersion((v) => v + 1);
+            setToast("Artigo salvo no banco de dados.");
             router.refresh();
           }}
         />
@@ -133,6 +144,7 @@ function BlogEditor({
   const [coverBusy, setCoverBusy] = useState(false);
   const [imageBusy, setImageBusy] = useState(false);
   const [message, setMessage] = useState("");
+  const dismissToast = useCallback(() => setMessage(""), []);
   const textarea = useRef<HTMLTextAreaElement>(null);
   function insert(text: string) {
     const el = textarea.current;
@@ -420,9 +432,11 @@ function BlogEditor({
         artificialmente.
       </p>
       {message && (
-        <p className="form-error" role="alert">
-          {message}
-        </p>
+        <AdminToast
+          message={message}
+          tone="error"
+          onDismiss={dismissToast}
+        />
       )}
       <div className="blog-actions">
         <button

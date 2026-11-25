@@ -1,15 +1,47 @@
 import { notFound } from "next/navigation";
+import type { ReactNode } from "react";
 import { Breadcrumb } from "@/platform/components/shell";
 import { site } from "@/platform/site";
 const pages: Record<
   string,
-  { title: string; intro: string; sections: { title: string; text: string }[] }
+  {
+    title: string;
+    intro: string;
+    sections: {
+      title: string;
+      text?: string;
+      paragraphs?: ReactNode[];
+    }[];
+  }
 > = {
   sobre: {
     title: "Tesouros em formato de velas",
     intro:
       "A Ofir nasceu da vontade de criar e transformar pequenos detalhes em experiências para sentir.",
     sections: [
+      {
+        title: "A primeira faísca",
+        paragraphs: [
+          <>
+            Nasci em São Paulo, cercada por <strong>movimento</strong> e{" "}
+            <strong>possibilidades</strong>, e desde cedo a curiosidade foi o
+            que me guiou.
+          </>,
+          <>
+            Sempre gostei de criar, de entender como as coisas funcionam e de
+            conquistar o que imaginava. Durante a pandemia, aos 15 anos,
+            transformei meu tempo livre em um pequeno grande passo: criei minha
+            primeira loja online de miçangas, onde descobri o prazer de dar
+            forma às ideias.
+          </>,
+          <>
+            Aos 18, iniciei a faculdade de medicina, atraída pela precisão e
+            pela busca constante por aperfeiçoamento. Entre a arte e a ciência,
+            encontrei meu <strong>equilíbrio</strong> — e é dessa união que
+            nasce a essência de Ofir.
+          </>,
+        ],
+      },
       {
         title: "Feitas à mão, com intenção",
         text: "Nossa história passa pelo fazer artesanal, pelas fragrâncias e pelo cuidado com a casa. Cada criação é um convite para encontrar um momento seu na rotina.",
@@ -74,7 +106,7 @@ const pages: Record<
     ],
   },
   carrinho: {
-    title: "Sua sacola",
+    title: "Seu carrinho",
     intro:
       "A compra online está sendo preparada. Por enquanto, nossa equipe pode ajudar você com produtos, encomendas e workshops.",
     sections: [],
@@ -111,14 +143,19 @@ export default async function Information({
   return (
     <div className="container page-content">
       <Breadcrumb items={[{ title: p.title }]} />
-      <article className="article">
-        <span className="eyebrow">Ofir</span>
+      <article className={`article${page === "sobre" ? " about-article" : ""}`}>
+        <span className="eyebrow">
+          {page === "sobre" ? "Nossa história" : "Ofir"}
+        </span>
         <h1>{p.title}</h1>
         <p className="lead">{p.intro}</p>
         {p.sections.map((s) => (
           <section key={s.title}>
             <h2>{s.title}</h2>
-            <p>{s.text}</p>
+            {s.text && <p>{s.text}</p>}
+            {s.paragraphs?.map((paragraph, index) => (
+              <p key={`${s.title}-${index}`}>{paragraph}</p>
+            ))}
           </section>
         ))}
         <a

@@ -54,3 +54,8 @@ Configure no ambiente local e no deploy `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLI
 ## ASAAS aplicado
 
 `20261112215550_asaas_order_flow.sql` cria pedidos assistidos e registro de eventos, com RLS e RPCs somente do servidor. Não cria cobranças ou pedidos, não altera dados do catálogo e não ativa produção. Homologação e limites em `docs/ASAAS.md`.
+
+## Preferências de pagamento no catálogo
+
+20261124211503_catalog_payment_preferences.sql adiciona o campo payment_preference em produtos e workshops. Aplicada no Supabase da Ofir. Opções do admin controlam limite de parcelas no cartão e exclusão de boleto no Checkout Pro; quando o carrinho mistura itens, prevalece a regra mais restritiva.
+

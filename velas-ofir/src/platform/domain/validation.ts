@@ -9,6 +9,14 @@ const image = z.union([
   z.literal(""),
   z.url().refine((url) => url.startsWith("https://"), "Use uma URL HTTPS."),
 ]);
+export const paymentPreference = z.enum([
+  "standard",
+  "cash",
+  "installments_3",
+  "installments_6",
+  "installments_12",
+  "no_ticket",
+]);
 export const productInput = z
   .object({
     name: z.string().trim().min(2).max(160),
@@ -24,7 +32,9 @@ export const productInput = z
     accepts_orders: z.boolean(),
     production_days: z.number().int().min(1).max(365).nullable(),
     image,
+    images: z.array(image).max(8).default([]),
     published: z.boolean(),
+    payment_preference: paymentPreference.default("standard"),
   })
   .refine((p) => !p.accepts_orders || p.production_days !== null, {
     message: "Informe o prazo para produtos sob encomenda.",
@@ -90,12 +100,7 @@ export const workshopInput = z
         (s) => s.trim().length >= 20,
         "Descreva o evento com pelo menos 20 caracteres.",
       ),
-    starts_at: z.iso
-      .datetime({ offset: true })
-      .refine(
-        (s) => new Date(s).getTime() > Date.now(),
-        "Escolha uma data futura.",
-      ),
+    starts_at: z.iso.datetime({ offset: true }),
     location: z.string().trim().min(5).max(500),
     price_cents: z.number().int().min(0).max(10000000),
     capacity: z.number().int().min(1).max(1000),
@@ -119,6 +124,7 @@ export const workshopInput = z
       .default([]),
     ticket_types: z.array(ticketTypeInput).min(1).max(20).optional(),
     published: z.boolean(),
+    payment_preference: paymentPreference.default("standard"),
   })
   .superRefine((workshop, ctx) => {
     if (!workshop.ticket_types) return;

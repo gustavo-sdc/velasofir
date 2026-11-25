@@ -10,7 +10,7 @@ Domínio oficial: https://velasofir.com.br. Next.js com renderização no servid
 - Administração com conta individual, autorização consultada no banco em cada operação e MFA obrigatório.
 - Migração local com RLS, preservação dos produtos antigos e auditoria. Validada em PostgreSQL local com identidades simuladas; ainda exige revisão e advisors no Supabase correto.
 - Metadados por página, canonical oficial, sitemap e robots dinâmicos. Redirect permanente de `/catalogo` para `/loja`.
-- Adaptador ASAAS no servidor, sandbox por padrão e checkout desativado. Contratos de dados cobertos por testes locais, sem transações financeiras.
+- Cadastro de clientes, carrinho sincronizado no Supabase e Checkout Pro via Orders API do Mercado Pago.
 - Redis opcional e desativado. Navegação e administração não dependem dele.
 
 Sem credenciais, o site apresenta estados de espera e contato. Não inventa produtos, preços, datas, depoimentos ou contagens de vagas. Fotos locais existentes foram reaproveitadas.
@@ -30,19 +30,11 @@ O primeiro proprietário foi autorizado em `staff_members` após aprovação exp
 
 Estoque antigo permanece NULL até conferência. O painel inicial cadastra produtos/turmas; edição completa, upload e gestão de acessos são próximas etapas. Imagens nesta versão são URLs HTTPS. Políticas de Storage ainda precisam de auditoria antes de habilitar uploads.
 
-## ASAAS: manter COMMERCE_ENABLED=false
+## Mercado Pago e clientes
 
-Configurar sandbox e variáveis `ASAAS_ENVIRONMENT`, `ASAAS_API_KEY` e `ASAAS_WEBHOOK_TOKEN`. Antes de ativar vendas, implementar e homologar:
+Checkout Pro usa a Orders API. Cliente cria conta Supabase Auth com e-mail/senha, nome, nascimento e endereço; carrinho e compras ficam associados à conta. O retorno visual do navegador não confirma pagamento: o webhook assinado consulta a order no Mercado Pago e só então atualiza o status no Supabase. O webhook deve ser ativado como evento `Order (Mercado Pago)` no painel do Mercado Pago. Configure `MERCADO_PAGO_ACCESS_TOKEN`, `MERCADO_PAGO_WEBHOOK_SECRET` e o domínio HTTPS em `NEXT_PUBLIC_SITE_URL`. Frete não entra no pagamento; é cotado manualmente após a compra.
 
-- Pedidos com preços em centavos validados no banco e reservas transacionais de estoque/vagas.
-- Expiração, pagamento tardio, persistência/reconciliação de checkout e recuperação de timeout sem cobrança duplicada.
-- Frete, endereço e prazo antes do pagamento.
-- Webhook autenticado, eventos duráveis, idempotência e transições de pedido em transações.
-- Ingressos únicos, check-in, e-mails e área da cliente.
-- Reembolsos, chargebacks e reconciliação financeira.
-- CNPJ, conta de produção, políticas comerciais e de privacidade finais.
-
-`createAsaasCheckout` não é exposto por rota pública e nunca deve receber preços do navegador. Não existe webhook público aceitando/descartando eventos nesta entrega. O parser descarta campos pessoais desnecessários. A página de retorno não marca pedidos como pagos. Parcelamento será configurado após fechar as condições de recebimento da conta; o adaptador inicial prevê Pix e cartão à vista.
+Migração `20261124203953_mercado_pago_customer_checkout.sql` cria perfis, carrinho e histórico de compras com RLS. Credenciais Mercado Pago ainda precisam ser configuradas no ambiente de deploy. Consulte [MERCADO-PAGO.md](MERCADO-PAGO.md).
 
 ## Redis: segundo momento
 
@@ -56,25 +48,25 @@ Manter `REDIS_ENABLED=false`. Quando o site estiver pronto, conectar uma conta g
 - Dados, fotos, preço e programação do primeiro workshop.
 - Política proposta: cancelamento de workshop até sete dias antes, preservando direitos legais. Textos públicos provisórios não liberam checkout.
 
-## Publicação e legado
+## Publicação e estrutura
 
 `netlify.toml` usa `.next` e remove o rewrite SPA. Conferir diretório base `velas-ofir` na Netlify. Variáveis de servidor precisam dos escopos de builds e functions; alterações exigem novo deploy. Nenhuma publicação automática foi acionada nesta entrega.
 
-Código Vite anterior preservado fora da compilação nova (`src/App.tsx`, `src/legacy-pages`, etc.). A pasta foi renomeada para impedir que Next a interprete como Pages Router. Next usa `src/app` e `src/platform`. Scripts `legacy:dev` e `legacy:build` mantêm acesso ao legado. Robots/sitemap da raiz pertencem ao legado; Next usa rotas de metadados.
+O código e as configurações do Vite anterior foram removidos. Next usa `src/app` para rotas e metadados e `src/platform` para componentes, regras de negócio e integrações. Consulte o mapa de pastas no README. O histórico do Git preserva a versão anterior.
 
 Não commitar `.env`/`.env.local`. O arquivo `.env` legado foi movido para `.env.local`, preservando a configuração local e retirando-o da próxima versão. O histórico ainda contém a antiga chave pública. Chaves publicáveis não são segredos e dependem de RLS correto; caso outros segredos reais sejam encontrados em auditoria do histórico, eles devem ser rotacionados.
 
 ## Verificação
 
-`npm test` cobre regras comerciais, contratos ASAAS e políticas reais de PostgreSQL via PGlite. As identidades de teste simulam claims do Supabase; não substituem Auth/MFA/Storage reais. Rodar também `npm run typecheck` e `npm run build`. Homologação com serviços reais só após reconexão.
+As rotas de cliente e pagamento devem ser homologadas com contas de teste do Mercado Pago e notificações simuladas antes de ativar produção.
 
 ## Painel administrativo
 
-O `/admin` usa interface própria com sidebar responsiva, visão geral, produtos, estoque, workshops/LPs, compras, inscrições e cancelamentos/reembolsos. MFA continua obrigatório. A equipe de edição acessa o catálogo; somente owner/admin consultam o histórico de compras, por uma leitura exclusiva do servidor com `SUPABASE_SECRET_KEY`. Sem essa configuração ou com falha na consulta, o painel mostra dados indisponíveis.
+O `/admin` usa interface própria com sidebar responsiva, visão geral, produtos, estoque, workshops/LPs, pedidos Mercado Pago, compras históricas, inscrições e cancelamentos/reembolsos. MFA continua obrigatório. Owner/admin atualizam o andamento dos pedidos pagos; support pode consultar.
 
 Os indicadores usam `buy_history`: compradores únicos de produtos pagos/entregues, quantidade de ingressos pagos/entregues e registros cancelados/reembolsados. Não representam solicitações de devolução física nem lista nominal de participantes por turma; esses fluxos precisam de modelagem e integração com pedidos. Nenhuma tabela antiga foi alterada.
 
-Estoque e publicação de produtos/LPs podem ser atualizados com autorização e MFA revalidados na API e no RLS. O cadastro de workshop gera slug único no servidor; a landing page usa título, foto, descrição, programação, inclusões, local, data e preço cadastrados. Rascunhos permanecem privados. A inscrição continua via contato enquanto checkout estiver desativado.
+Estoque e publicação de produtos/LPs podem ser atualizados com autorização e MFA revalidados na API e no RLS. O cadastro de workshop gera slug único no servidor; a landing page usa título, foto, descrição, programação, inclusões, local, data e preço cadastrados. Rascunhos permanecem privados. Ingressos pagos podem ser comprados no carrinho; emissão de ingresso e check-in ainda exigem fluxo próprio.
 
 ## Workshops: imagens e tipos de ingresso
 
@@ -102,7 +94,7 @@ Migração `20261112211555_product_image_upload.sql` aplicada em 12/11/2026: buc
 
 ## Identidade visual pública
 
-Restilização baseada na referência do Instagram fornecida pelo responsável: logo original, branco/preto e dourado discreto, tipografia serifada, composição editorial e fotografias reais em destaque. A home usa imagens de produtos e de workshop cadastradas no Supabase; imagens locais existentes servem apenas como fallback. A camada `src/app/brand.css` é limitada à área pública (`.storefront`). Mantidos uploads no painel, fotos de produto centralizadas com cover e a LP com banner de até 60% da tela e cartões sobrepostos.
+Restilização baseada na referência do Instagram fornecida pelo responsável: logo original, branco/preto e dourado discreto, tipografia serifada, composição editorial e fotografias reais em destaque. A composição da home usa mídias locais em `public/media/`, com nomes documentados em `public/media/README.md`. O banner de experiências usa vídeo MP4 local. A camada `src/app/brand.css` é limitada à área pública (`.storefront`). Mantidos uploads no painel, fotos de produto centralizadas com cover e a LP com banner de até 60% da tela e cartões sobrepostos.
 
 ## Blog e publicação editorial
 
@@ -121,14 +113,10 @@ Os dois guias fixos foram importados com os mesmos endereços. A data visível p
 
 Referências: https://developers.google.com/search/docs/appearance/ai-features e https://developers.google.com/search/docs/appearance/structured-data/article . Após publicar o site, acompanhar indexação e sitemap no Search Console. Nenhum deploy foi realizado nesta etapa.
 
-## Pedidos e ASAAS
-
-Implementação de venda assistida no painel concluída: geração de link Pix/cartão, reservas transacionais, idempotência e webhooks com conferência de valor. Migração `20261112215550_asaas_order_flow.sql` aplicada. Sandbox isolado do estoque/vagas de produção; sem cobrança criada nesta etapa. Confira configuração, homologação e limites em [ASAAS.md](ASAAS.md). Produção, checkout público e Redis continuam desativados. Reembolsos, chargebacks e emissão de ingressos ainda exigem fluxos próprios.
-
 ## Largura das páginas
 
 Containers públicos, header e footer compartilham a mesma largura (até 1440 px no desktop, margens responsivas no tablet/celular). Artigos, descrições e LPs usam a largura disponível, preservando a sobreposição do banner da LP.
 
 ## Páginas de relacionamento
 
-`/boas-vindas` está pronta como destino após cadastro de clientes. O cadastro público de clientes ainda não existe; esta entrega não adiciona autenticação nem altera configurações de Auth. `/esta-indo-embora` é o novo destino de saída do checkout ASAAS; `/compra/cancelada` preserva compatibilidade. Essas páginas não alteram pedidos/pagamentos e não são indexáveis. Vídeos opcionais, a fornecer depois, são configurados por `WELCOME_YOUTUBE_URL` e `GOODBYE_YOUTUBE_URL`; somente links YouTube válidos são incorporados, sem player vazio ou vídeo inventado. Campos de configuração no painel não fazem parte desta entrega reduzida.
+`/conta/acessar` cria e autentica clientes; `/conta` mostra perfil, idade calculada, compras e andamento. `/boas-vindas` e `/esta-indo-embora` continuam disponíveis como páginas institucionais e não confirmam pagamentos. Vídeos opcionais usam `WELCOME_YOUTUBE_URL` e `GOODBYE_YOUTUBE_URL`.

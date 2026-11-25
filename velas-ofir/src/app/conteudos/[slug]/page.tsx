@@ -59,23 +59,23 @@ export default async function Article({
       dateStyle: "long",
     });
   return (
-    <div className="container page-content">
+    <main className="mx-auto min-h-[60vh] w-[80%] max-w-[90rem] pb-[8vh] pt-[3vh] md:pt-[5vh]">
       <Breadcrumb
         items={[
           { title: "Universo Ofir", href: "/conteudos" },
           { title: post.title },
         ]}
       />
-      <article className="article">
-        <header>
-          <span className="eyebrow">{post.category}</span>
-          <h1>{post.title}</h1>
-          <p className="lead">{post.excerpt}</p>
-          <div className="byline">
+      <article className="w-full">
+        <header className="mx-auto max-w-[48rem] pt-5 md:pt-8">
+          <span className="mb-3 block text-[0.62rem] font-medium uppercase tracking-[0.16em] text-[#777]">{post.category}</span>
+          <h1 className="mb-4 break-words text-[clamp(2.375rem,10vw,4rem)] leading-[1.04] tracking-[-0.06em]">{post.title}</h1>
+          <p className="mb-5 text-[0.95rem] leading-7 text-[#555] md:text-[1.0625rem]">{post.excerpt}</p>
+          <div className="flex flex-wrap gap-x-5 gap-y-1.5 border-b border-[#e8e5df] pb-4 text-[0.7rem] leading-relaxed text-[#777]">
             <span>Por {post.author_name}</span>
             {post.published_at && (
               <span>
-                Publicado em{" "}
+                <span className="text-[#222]">Publicado em </span>
                 <time dateTime={post.published_at}>
                   {date(post.published_at)}
                 </time>
@@ -83,26 +83,28 @@ export default async function Article({
             )}
             {post.updated_at !== post.published_at && (
               <span>
-                Atualizado em{" "}
+                <span className="text-[#222]">Atualizado em </span>
                 <time dateTime={post.updated_at}>{date(post.updated_at)}</time>
               </span>
             )}
           </div>
           {post.cover_image && (
             <img
-              className="blog-cover-image"
+              className="my-6 aspect-[16/9] max-h-[39rem] w-full rounded-lg bg-[#f2f1ee] object-cover md:my-8"
               src={post.cover_image}
               alt={post.cover_alt}
               fetchPriority="high"
             />
           )}
         </header>
-        <ArticleBody content={post.content} />
-        <footer className="blog-article-footer">
-          <Link className="text-link" href="/conteudos">
+        <div className="mx-auto max-w-[45rem] text-[0.95rem] leading-[1.9] text-[#242424] [&>div>p:first-child]:text-[1.0625rem] [&>div>p:first-child]:text-[#222]">
+          <ArticleBody content={post.content} />
+        </div>
+        <footer className="mx-auto mt-11 flex max-w-[45rem] flex-wrap gap-5 border-t border-[#e8e5df] py-7">
+          <Link className="border-b border-[#aaa] pb-1 text-sm underline-offset-4 hover:border-[#171717]" href="/conteudos">
             ← Todos os artigos
           </Link>
-          <Link className="text-link" href="/loja">
+          <Link className="border-b border-[#aaa] pb-1 text-sm underline-offset-4 hover:border-[#171717]" href="/loja">
             Conheça as velas Ofir ↗
           </Link>
         </footer>
@@ -147,6 +149,6 @@ export default async function Article({
           })),
         }}
       />
-    </div>
+    </main>
   );
 }

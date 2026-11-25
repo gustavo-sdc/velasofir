@@ -1,30 +1,34 @@
 import Link from "next/link";
 import Image from "next/image";
-import logo from "@/assets/ofir-logo-white-bg.png";
-import { ArrowUpRight, ShoppingBag } from "lucide-react";
+import logo from "@/assets/brand/ofir-logo-white-bg.png";
+import { ArrowUpRight } from "lucide-react";
 import { site } from "../site";
+import { HeaderActions } from "./header-actions";
 export function Header() {
   return (
     <>
       <div className="announcement">
-        Velas artesanais & experiências para sentir.{" "}
-        <span>Feito com cuidado, em Guarulhos.</span>
+        Criada para criar.{" "}
+        <span>Tesouros em formato de velas.</span>
       </div>
       <header className="site-header">
         <div className="header-inner">
           <Link href="/" className="wordmark" aria-label="Ofir, página inicial">
-            <Image src={logo} alt="OFIR." priority sizes="120px" />
+            <Image
+              src={logo}
+              alt="OFIR."
+              priority
+              sizes="(max-width: 48rem) 24vw, 8vw"
+            />
           </Link>
           <nav aria-label="Navegação principal">
+            <Link href="/">Início</Link>
             <Link href="/loja">Loja</Link>
             <Link href="/workshops">Workshops</Link>
             <Link href="/conteudos">Inspire-se</Link>
             <Link href="/sobre">A Ofir</Link>
           </nav>
-          <Link className="bag-link" href="/carrinho">
-            <ShoppingBag size={19} aria-hidden="true" />
-            <span>Sacola</span>
-          </Link>
+          <HeaderActions />
         </div>
       </header>
     </>
@@ -36,7 +40,7 @@ export function Footer() {
       <div className="container footer-grid">
         <div>
           <Link href="/" className="wordmark">
-            <Image src={logo} alt="OFIR." sizes="140px" />
+            <Image src={logo} alt="OFIR." sizes="(max-width: 48rem) 24vw, 9vw" />
           </Link>
           <p>
             Tesouros em formato de velas.
@@ -62,7 +66,7 @@ export function Footer() {
       </div>
       <div className="container footer-bottom">
         <span>© {new Date().getFullYear()} Ofir Velas</span>
-        <span>Feito com cuidado, em Guarulhos.</span>
+        <span>Tesouros em formato de velas.</span>
         <Link href="/admin">Área da equipe</Link>
       </div>
     </footer>
@@ -74,7 +78,7 @@ export function Breadcrumb({
   items: { title: string; href?: string }[];
 }) {
   return (
-    <nav className="breadcrumb" aria-label="Caminho da página">
+    <nav className="mb-5 text-xs text-[#777] md:mb-8" aria-label="Caminho da página">
       <Link href="/">Início</Link>
       {items.map((item, i) => (
         <span key={i}>

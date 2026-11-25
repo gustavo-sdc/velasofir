@@ -12,7 +12,7 @@ const pages = [
   ["/entregas", "Entregas e encomendas"],
   ["/politicas", "Trocas e cancelamentos"],
   ["/privacidade", "Sua privacidade"],
-  ["/carrinho", "Sua sacola"],
+  ["/carrinho", "Seu carrinho"],
   ["/admin", "Conexão em preparação."],
   ["/sorteador", "Sorteador Ofir"],
 ];

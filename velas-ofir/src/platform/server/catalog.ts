@@ -13,11 +13,14 @@ export interface Product {
   description: string;
   price: number;
   image: string | null;
+  images: string[];
   availability: Availability;
   productionDays: number | null;
   material: string;
   size: string;
   burnTime: string;
+  stockQuantity: number | null;
+  acceptsOrders: boolean;
 }
 export interface Workshop {
   youtube_videos: string[];
@@ -60,25 +63,37 @@ export async function products(): Promise<CatalogResult<Product>> {
       if (error) throw error;
       return (data ?? [])
         .filter((p) => p.kind !== "colecao" && p.published !== false)
-        .map((p) => ({
-          id: String(p.id),
-          slug: p.slug || `${slugify(String(p.name))}-${p.id}`,
-          name: String(p.name),
-          collection: String(p.collection ?? ""),
-          description: String(p.description ?? ""),
-          price: Number(p.price),
-          image: imageUrl(p.image),
-          availability:
-            typeof p.stock_quantity === "number"
-              ? availability(p.stock_quantity, p.accepts_orders === true)
-              : p.status === "encomenda"
-                ? ("made_to_order" as const)
-                : ("ready" as const),
-          productionDays: p.production_days ?? null,
-          material: p.materia_prima ?? "",
-          size: p.tamanho ?? "",
-          burnTime: p.queima ?? "",
-        }))
+        .map((p) => {
+          const mainImage = imageUrl(p.image);
+          const images = Array.isArray(p.images)
+            ? p.images
+                .map(imageUrl)
+                .filter((url): url is string => Boolean(url))
+            : [];
+          return {
+            id: String(p.id),
+            slug: p.slug || `${slugify(String(p.name))}-${p.id}`,
+            name: String(p.name),
+            collection: String(p.collection ?? ""),
+            description: String(p.description ?? ""),
+            price: Number(p.price),
+            image: mainImage,
+            images: images.length ? images : mainImage ? [mainImage] : [],
+            availability:
+              typeof p.stock_quantity === "number"
+                ? availability(p.stock_quantity, p.accepts_orders === true)
+                : p.status === "encomenda"
+                  ? ("made_to_order" as const)
+                  : ("ready" as const),
+            productionDays: p.production_days ?? null,
+            material: p.materia_prima ?? "",
+            size: p.tamanho ?? "",
+            burnTime: p.queima ?? "",
+            stockQuantity:
+              typeof p.stock_quantity === "number" ? p.stock_quantity : null,
+            acceptsOrders: p.accepts_orders === true,
+          };
+        })
         .filter((p) => Number.isFinite(p.price) && p.price >= 0);
     });
     return { items, state: "ready" };
@@ -99,10 +114,9 @@ export async function workshops(): Promise<CatalogResult<Workshop>> {
             "id,slug,title,description,starts_at,location,price_cents,capacity,image,images,youtube_videos,ticket_types,includes,program",
           )
           .eq("published", true)
-          .gt("starts_at", new Date().toISOString())
           .order("starts_at");
         if (error) throw error;
-        return (data ?? []).map((w) => ({
+        const mapped = (data ?? []).map((w) => ({
           ...w,
           image: imageUrl(w.image),
           youtube_videos: (Array.isArray(w.youtube_videos)
@@ -124,6 +138,15 @@ export async function workshops(): Promise<CatalogResult<Workshop>> {
             return parsed.success ? [parsed.data] : [];
           }),
         })) as Workshop[];
+        const now = Date.now();
+        return mapped.sort((a, b) => {
+          const aTime = new Date(a.starts_at).getTime();
+          const bTime = new Date(b.starts_at).getTime();
+          const aUpcoming = aTime > now;
+          const bUpcoming = bTime > now;
+          if (aUpcoming !== bUpcoming) return aUpcoming ? -1 : 1;
+          return aUpcoming ? aTime - bTime : bTime - aTime;
+        });
       },
       60,
     );

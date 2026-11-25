@@ -73,13 +73,13 @@ export default async function Admin() {
         session.db
           .from("products")
           .select(
-            "id,name,slug,description,collection,image,price,status,stock_quantity,accepts_orders,production_days,published",
+            "id,name,slug,description,collection,image,images,price,status,stock_quantity,accepts_orders,production_days,published,payment_preference",
           )
           .order("order"),
         session.db
           .from("workshops")
           .select(
-            "id,slug,title,description,starts_at,location,price_cents,capacity,includes,program,image,images,youtube_videos,ticket_types,published",
+            "id,slug,title,description,starts_at,location,price_cents,capacity,includes,program,image,images,youtube_videos,ticket_types,published,payment_preference",
           )
           .order("starts_at"),
       ])

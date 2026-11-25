@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import { AdminToast } from "./admin-toast";
 export function ImageUpload({
   scope,
   disabled,
@@ -16,6 +17,9 @@ export function ImageUpload({
   const [images, setImages] = useState(initialImages);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const dismissError = useCallback(() => setError(""), []);
+  const dismissSuccess = useCallback(() => setSuccess(""), []);
   return (
     <>
       <h3>
@@ -44,6 +48,9 @@ export function ImageUpload({
           scope !== "workshop" ? (images[0] ?? "") : JSON.stringify(images)
         }
       />
+      {scope === "product" && (
+        <input type="hidden" name="images" value={JSON.stringify(images)} />
+      )}
       <label className="form-field">
         Enviar imagens
         <input
@@ -59,6 +66,7 @@ export function ImageUpload({
             const files = Array.from(e.target.files ?? []);
             e.target.value = "";
             setError("");
+            setSuccess("");
             if (
               files.length > maxImages ||
               (maxImages > 1 && files.length + images.length > maxImages)
@@ -84,6 +92,12 @@ export function ImageUpload({
                   maxImages === 1 ? [result.url] : [...current, result.url],
                 );
               }
+              if (files.length)
+                setSuccess(
+                  files.length === 1
+                    ? "Imagem enviada com sucesso."
+                    : "Imagens enviadas com sucesso.",
+                );
             } catch (error) {
               setError(
                 error instanceof Error ? error.message : "Falha no upload.",
@@ -97,9 +111,14 @@ export function ImageUpload({
       </label>
       {uploading && <p role="status">Enviando imagens…</p>}
       {error && (
-        <p role="alert" className="form-error">
-          {error}
-        </p>
+        <AdminToast message={error} tone="error" onDismiss={dismissError} />
+      )}
+      {success && (
+        <AdminToast
+          message={success}
+          tone="success"
+          onDismiss={dismissSuccess}
+        />
       )}
       <div className="workshop-upload-grid">
         {images.map((url, i) => (

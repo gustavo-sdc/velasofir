@@ -10,6 +10,7 @@ export default function robots(): MetadataRoute.Robots {
         "/api/",
         "/carrinho",
         "/minha-conta",
+        "/conta",
         "/compra/",
         "/boas-vindas",
         "/esta-indo-embora",
