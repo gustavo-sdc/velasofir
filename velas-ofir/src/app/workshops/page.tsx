@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import { workshops, type Workshop } from "@/platform/server/catalog";
 import { Breadcrumb } from "@/platform/components/shell";
 import { WorkshopShowcaseScroller } from "@/platform/components/workshop-showcase-scroller";

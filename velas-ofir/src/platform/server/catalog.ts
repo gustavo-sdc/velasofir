@@ -67,8 +67,8 @@ export async function products(): Promise<CatalogResult<Product>> {
           const mainImage = imageUrl(p.image);
           const images = Array.isArray(p.images)
             ? p.images
-                .map(imageUrl)
-                .filter((url): url is string => Boolean(url))
+                .map((url: unknown) => imageUrl(url))
+                .filter((url: string | null): url is string => Boolean(url))
             : [];
           return {
             id: String(p.id),
@@ -128,7 +128,7 @@ export async function workshops(): Promise<CatalogResult<Workshop>> {
             return url ? [url] : [];
           }),
           images: (Array.isArray(w.images) ? w.images : [])
-            .map(imageUrl)
+            .map((url: unknown) => imageUrl(url))
             .filter((url): url is string => Boolean(url)),
           ticket_types: (Array.isArray(w.ticket_types)
             ? w.ticket_types
