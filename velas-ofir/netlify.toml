@@ -6,3 +6,6 @@
   NODE_VERSION = "22.14.0"
 
 # Next.js usa o adaptador automático da Netlify, sem rewrite de SPA.
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
