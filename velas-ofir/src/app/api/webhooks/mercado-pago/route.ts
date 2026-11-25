@@ -3,13 +3,13 @@ import { NextResponse } from "next/server";
 import { privilegedDatabase } from "@/platform/server/supabase";
 
 function validSignature(request: Request, dataId: string) {
-  const secret = process.env.MERCADO_PAGO_WEBHOOK_SECRET;
+  const secret = process.env.MERCADO_PAGO_WEBHOOK_SECRET?.trim();
   const signature = request.headers.get("x-signature");
   const requestId = request.headers.get("x-request-id");
-  if (!secret || !signature || !requestId || !dataId) return false;
+  if (!secret || !signature || !dataId) return false;
   const fields = Object.fromEntries(signature.split(",").map((part) => part.trim().split("=", 2)));
   if (!fields.ts || !fields.v1 || !/^[a-f0-9]{64}$/i.test(fields.v1)) return false;
-  const manifest = `id:${dataId};request-id:${requestId};ts:${fields.ts};`;
+  const manifest = `id:${dataId};${requestId ? `request-id:${requestId};` : ""}ts:${fields.ts};`;
   const expected = createHmac("sha256", secret).update(manifest).digest();
   const received = Buffer.from(fields.v1, "hex");
   return received.length === expected.length && timingSafeEqual(received, expected);
