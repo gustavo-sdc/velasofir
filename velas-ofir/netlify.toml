@@ -4,6 +4,7 @@
 
 [build.environment]
   NODE_VERSION = "22.14.0"
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SITE_URL,NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
 
 # Next.js usa o adaptador automático da Netlify, sem rewrite de SPA.
 
