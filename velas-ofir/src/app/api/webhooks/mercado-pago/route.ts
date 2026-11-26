@@ -17,16 +17,30 @@ function validSignature(request: Request, dataId: string) {
 
 export async function POST(request: Request) {
   const url = new URL(request.url);
-  const dataId = url.searchParams.get("data.id") ?? "";
-  if (!validSignature(request, dataId)) return NextResponse.json({ error: "Assinatura inválida." }, { status: 401 });
   if (Number(request.headers.get("content-length") ?? 0) > 100000) return NextResponse.json({ error: "Evento muito grande." }, { status: 413 });
+  let raw: string;
+  let notice: Record<string, unknown> | null = null;
   try {
-    const raw = await request.text();
+    raw = await request.text();
     if (Buffer.byteLength(raw) > 100000) return NextResponse.json({ error: "Evento muito grande." }, { status: 413 });
-    const notice = JSON.parse(raw);
-    const orderId = String(notice.data?.id ?? dataId);
-    if (notice.type !== "order" || orderId !== dataId || !/^[A-Za-z0-9_-]{10,64}$/.test(orderId)) return NextResponse.json({ received: true });
-    const simulatedReference = String(notice.data?.external_reference ?? "");
+    const parsed: unknown = JSON.parse(raw);
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) notice = parsed as Record<string, unknown>;
+  } catch {
+    return NextResponse.json({ error: "Notificação inválida." }, { status: 400 });
+  }
+  const noticeData = notice?.data && typeof notice.data === "object" && !Array.isArray(notice.data)
+    ? notice.data as Record<string, unknown>
+    : null;
+  const queryDataId = url.searchParams.get("data.id") ?? "";
+  const bodyDataId = String(noticeData?.id ?? "");
+  if (queryDataId && bodyDataId && queryDataId !== bodyDataId)
+    return NextResponse.json({ error: "Identificador da notificação divergente." }, { status: 401 });
+  const dataId = queryDataId || bodyDataId;
+  if (!validSignature(request, dataId)) return NextResponse.json({ error: "Assinatura inválida." }, { status: 401 });
+  const orderId = bodyDataId || dataId;
+  if (!notice || notice.type !== "order" || orderId !== dataId || !/^[A-Za-z0-9_-]{10,64}$/.test(orderId)) return NextResponse.json({ received: true });
+  try {
+    const simulatedReference = String(noticeData?.external_reference ?? "");
     if (simulatedReference && !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(simulatedReference))
       return NextResponse.json({ received: true });
     const accessToken = process.env.MERCADO_PAGO_ACCESS_TOKEN;
@@ -49,7 +63,7 @@ export async function POST(request: Request) {
     if (previous.error) throw Error();
     if (previous.data?.outcome === "processed") return NextResponse.json({ received: true });
     const paidCents = Math.round(Number(mercadoPagoOrder.total_paid_amount) * 100);
-    const currency = mercadoPagoOrder.currency ?? mercadoPagoOrder.currency_id ?? notice.data?.currency_id;
+    const currency = mercadoPagoOrder.currency ?? mercadoPagoOrder.currency_id ?? noticeData?.currency_id;
     const amountMatches = currency === "BRL" && paidCents === order.data.total_cents;
     let paymentStatus = "pending";
     let fulfillmentStatus = "awaiting_payment";
