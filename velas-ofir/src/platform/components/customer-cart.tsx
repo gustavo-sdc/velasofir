@@ -24,6 +24,7 @@ import {
 export function CustomerCart() {
   const [items, setItems] = useState<CartLine[]>([]);
   const [busy, setBusy] = useState(false);
+  const [openingCheckout, setOpeningCheckout] = useState(false);
   const [updatingKey, setUpdatingKey] = useState<string | null>(null);
   const [message, setMessage] = useState("");
 
@@ -147,8 +148,9 @@ export function CustomerCart() {
       }
       if (!response.ok)
         throw Error(result.error ?? "Não foi possível iniciar o checkout.");
-      writeCart([]);
+      setOpeningCheckout(true);
       window.location.assign(result.checkoutUrl);
+      window.setTimeout(() => setOpeningCheckout(false), 10000);
     } catch (error) {
       setMessage(
         error instanceof Error
@@ -222,7 +224,8 @@ export function CustomerCart() {
           </div>
           <div className="flex items-baseline justify-between gap-3 py-5"><span className="text-[0.95rem] font-medium">Total parcial</span><strong className="text-[1.5rem] font-medium tracking-[-0.04em] tabular-nums">{money(total / 100)}</strong></div>
           {message && <p role="alert" className="mb-4 rounded-[0.625rem] border border-[#e4c7c2] bg-[#fff6f4] px-3 py-2.5 text-[0.8rem] leading-5 text-[#922f27]">{message}</p>}
-          <button className="button flex w-full items-center justify-center" disabled={busy || updatingKey !== null} onClick={checkout}>{busy ? "Preparando checkout…" : <>Finalizar compra <ArrowRight size={16} /></>}</button>
+          {(busy || openingCheckout) && <p className="mb-3 text-center text-[0.78rem] leading-5 text-[#555]" role="status">{openingCheckout ? "Abrindo o checkout seguro do Mercado Pago…" : "Preparando seu pedido…"}</p>}
+          <button className="button flex w-full items-center justify-center" disabled={busy || openingCheckout || updatingKey !== null} onClick={checkout}>{openingCheckout ? "Abrindo checkout seguro…" : busy ? "Preparando checkout…" : <>Finalizar compra <ArrowRight size={16} /></>}</button>
           <p className="mt-4 flex items-start gap-2 text-[0.72rem] leading-5 text-[#777]"><Check className="mt-0.5 shrink-0 text-[#6c765b]" size={14} /> Pagamento seguro processado pelo Mercado Pago.</p>
           <p className="mt-2 flex items-start gap-2 text-[0.72rem] leading-5 text-[#777]"><LockKeyhole className="mt-0.5 shrink-0" size={13} /> Seus itens ficam associados à sua conta.</p>
         </aside>

@@ -25,6 +25,7 @@ const inputSchema = z.object({
     quantity: z.number().int().min(1).max(20),
   })).min(1).max(30),
 });
+const resumeSchema = z.object({ resumeOrderId: z.uuid().optional() });
 
 export async function POST(request: Request) {
   if (request.headers.get("origin") !== new URL(request.url).origin)
@@ -43,9 +44,27 @@ export async function POST(request: Request) {
   if (!session) return NextResponse.json({ error: "Conta indisponível." }, { status: 503, headers: noCache });
   const { data: { user } } = await session.auth.getUser();
   if (!user?.email) return NextResponse.json({ error: "Entre na sua conta para continuar." }, { status: 401, headers: noCache });
+  const requestBody = resumeSchema.safeParse(await request.json().catch(() => ({})));
+  if (!requestBody.success) return NextResponse.json({ error: "Pedido inválido para retomar o pagamento." }, { status: 400, headers: noCache });
+  const resumeOrderId = requestBody.data.resumeOrderId;
+  const db = privilegedDatabase();
   const savedCart = await session.from("customer_cart").select("items").eq("user_id", user.id).maybeSingle();
   if (savedCart.error) return NextResponse.json({ error: "Não foi possível carregar sua sacola." }, { status: 503, headers: noCache });
-  const parsed = inputSchema.safeParse({ items: savedCart.data?.items });
+  let sourceItems: unknown = savedCart.data?.items;
+  if (resumeOrderId) {
+    const { data: resumeOrder, error } = await db.from("customer_orders")
+      .select("id,items,payment_status")
+      .eq("id", resumeOrderId)
+      .eq("customer_id", user.id)
+      .maybeSingle();
+    if (error) return NextResponse.json({ error: "Não foi possível carregar esse pedido." }, { status: 503, headers: noCache });
+    if (!resumeOrder || resumeOrder.payment_status !== "pending")
+      return NextResponse.json({ error: "Esse pedido não está aguardando pagamento." }, { status: 409, headers: noCache });
+    sourceItems = Array.isArray(resumeOrder.items) ? (resumeOrder.items as CheckoutLine[]).map((item) => ({
+      kind: item.kind, catalog_id: item.catalog_id, ticket_name: item.ticket_name, quantity: item.quantity,
+    })) : [];
+  }
+  const parsed = inputSchema.safeParse({ items: sourceItems });
   if (!parsed.success) return NextResponse.json({ error: "Confira os itens da sua sacola." }, { status: 400, headers: noCache });
 
   const grouped = new Map<string, z.infer<typeof inputSchema>["items"][number]>();
@@ -67,26 +86,54 @@ export async function POST(request: Request) {
     if (profile.error || !profile.data || profile.data.full_name.trim().length < 2)
       return NextResponse.json({ error: "Complete seu cadastro antes de pagar." }, { status: 409, headers: noCache });
 
-    const db = privilegedDatabase();
     const openOrder = await db.from("customer_orders")
-      .select("id,items,subtotal_cents,total_cents,checkout_url")
+      .select("id,items,subtotal_cents,total_cents,checkout_url,mercado_pago_order_id")
       .eq("customer_id", user.id)
       .eq("cart_fingerprint", cartFingerprint)
       .eq("payment_status", "pending")
       .maybeSingle();
     if (openOrder.error) throw Error("Não foi possível verificar uma tentativa anterior de checkout.");
 
+    let pendingOrder = openOrder.data;
+    if (pendingOrder?.checkout_url) {
+      if (!pendingOrder.mercado_pago_order_id)
+        throw Error("Não foi possível verificar o checkout anterior. Tente novamente em instantes.");
+      const providerStatus = await fetch(`https://api.mercadopago.com/v1/orders/${encodeURIComponent(pendingOrder.mercado_pago_order_id)}`, {
+        headers: { Authorization: `Bearer ${accessToken}` }, cache: "no-store", redirect: "error", signal: AbortSignal.timeout(12000),
+      });
+      if (!providerStatus.ok) throw Error("Não foi possível verificar se o checkout anterior ainda está ativo. Tente novamente em instantes.");
+      const providerOrder = await providerStatus.json();
+      if (providerOrder.status === "created" || (providerOrder.status === "action_required" && providerOrder.status_detail === "waiting_payment"))
+        return NextResponse.json({ checkoutUrl: pendingOrder.checkout_url, orderId: pendingOrder.id }, { headers: noCache });
+      if (providerOrder.status === "processing")
+        throw Error("Esse pagamento está em processamento. Aguarde a atualização do pedido antes de tentar novamente.");
+      if (providerOrder.status === "processed")
+        throw Error("O Mercado Pago já confirmou esse pagamento. Atualize seus pedidos em Minha conta.");
+      if (providerOrder.status === "refunded" || providerOrder.status_detail === "refunded")
+        throw Error("Esse pedido foi estornado. Confira Meus pedidos antes de iniciar outra compra.");
+      if (["canceled", "failed", "expired"].includes(String(providerOrder.status))
+        || ["canceled", "expired"].includes(String(providerOrder.status_detail))) {
+        const released = await db.rpc("ofir_apply_mercado_pago_order_state", {
+          p_order_id: pendingOrder.id,
+          p_payment_status: providerOrder.status === "failed" ? "rejected" : "cancelled",
+          p_fulfillment_status: "cancelled",
+          p_payment_id: "",
+          p_inventory_action: "release",
+        });
+        if (released.error) throw Error("Não foi possível liberar a tentativa expirada para criar um novo checkout.");
+        pendingOrder = null;
+      } else {
+        throw Error("O checkout anterior ainda está sendo verificado. Tente novamente em instantes.");
+      }
+    }
+
     let id: string;
     let snapshot: CheckoutLine[];
     let totalCents: number;
-    if (openOrder.data) {
-      id = openOrder.data.id;
-      snapshot = openOrder.data.items as CheckoutLine[];
-      totalCents = openOrder.data.total_cents;
-      if (openOrder.data.checkout_url) {
-        await session.from("customer_cart").delete().eq("user_id", user.id);
-        return NextResponse.json({ checkoutUrl: openOrder.data.checkout_url, orderId: id }, { headers: noCache });
-      }
+    if (pendingOrder) {
+      id = pendingOrder.id;
+      snapshot = pendingOrder.items as CheckoutLine[];
+      totalCents = pendingOrder.total_cents;
     } else {
       snapshot = [];
       for (const line of cartLines) {
@@ -122,7 +169,7 @@ export async function POST(request: Request) {
       }).select("id").single();
       if (created.error) {
         const racedOrder = await db.from("customer_orders")
-          .select("id,items,subtotal_cents,total_cents,checkout_url")
+          .select("id,items,subtotal_cents,total_cents,checkout_url,mercado_pago_order_id")
           .eq("customer_id", user.id)
           .eq("cart_fingerprint", cartFingerprint)
           .eq("payment_status", "pending")
@@ -132,8 +179,7 @@ export async function POST(request: Request) {
         snapshot = racedOrder.data.items as CheckoutLine[];
         totalCents = racedOrder.data.total_cents;
         if (racedOrder.data.checkout_url) {
-          await session.from("customer_cart").delete().eq("user_id", user.id);
-          return NextResponse.json({ checkoutUrl: racedOrder.data.checkout_url, orderId: id }, { headers: noCache });
+          throw Error("Já existe uma tentativa de pagamento sendo preparada. Clique novamente em alguns segundos para verificar se o checkout está ativo.");
         }
       } else {
         id = created.data.id;
@@ -232,7 +278,6 @@ export async function POST(request: Request) {
       checkout_url: mercadoPagoOrder.checkout_url,
     }).eq("id", id);
     if (savedProviderOrder.error) throw Error("O checkout foi criado, mas não foi possível salvar sua referência. Tente novamente.");
-    await session.from("customer_cart").delete().eq("user_id", user.id);
     return NextResponse.json({ checkoutUrl: mercadoPagoOrder.checkout_url, orderId: id }, { headers: noCache });
   } catch (error) {
     console.error("[mercado-pago-checkout] Erro ao preparar checkout", {

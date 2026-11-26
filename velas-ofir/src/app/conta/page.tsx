@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { sessionDatabase } from "@/platform/server/supabase";
 import { SignOut } from "@/platform/components/staff-login";
+import { ResumeOrderButton } from "@/platform/components/resume-order-button";
 import { money } from "@/platform/site";
 
 const paymentLabels: Record<string, string> = {
@@ -37,7 +38,7 @@ export default async function CustomerAccountPage() {
     data: { user },
   } = await db.auth.getUser();
   if (!user) redirect("/conta/acessar");
-  const [{ data: profile }, { data: orders }] = await Promise.all([
+  const [{ data: profile }, { data: orders, error: ordersError }] = await Promise.all([
     db
       .from("customer_profiles")
       .select("*")
@@ -104,50 +105,59 @@ export default async function CustomerAccountPage() {
             <div><span className="eyebrow">Acompanhe suas compras</span><h2>Meus pedidos</h2></div>
             <span className="customer-account-count">{orders?.length ?? 0} {orders?.length === 1 ? "pedido" : "pedidos"}</span>
           </div>
-          {!orders?.length ? (
-            <p className="customer-account-empty">Suas compras de velas e eventos aparecerão aqui.</p>
-          ) : (
-            <div className="customer-account-table-wrap">
-              <table className="customer-account-table customer-orders-table">
-                <thead><tr><th>Data</th><th>Itens</th><th>Valor</th><th>Pagamento</th><th>Status da entrega</th><th>Ação</th></tr></thead>
-                <tbody>
-                  {orders.map((order) => (
-                    (() => {
-                      const orderDate = new Date(order.created_at).toLocaleDateString("pt-BR");
-                      const requestedItems = (order.items as { name: string; quantity: number }[])
-                        .map((item) => `${item.quantity}× ${item.name}`)
-                        .join(", ");
-                      const deliveryAddress = [
-                        [profile?.street, profile?.address_number].filter(Boolean).join(", "),
-                        profile?.address_complement,
-                        profile?.neighborhood,
-                        [profile?.city, profile?.state].filter(Boolean).join(" / "),
-                        profile?.postal_code && `CEP ${profile.postal_code}`,
-                      ].filter(Boolean).join(", ") || "Endereço não cadastrado";
-                      const deliveryMessage = [
-                        "Olá, Ofir! Gostaria de combinar a entrega do meu pedido.",
-                        `Data da compra: ${orderDate}`,
-                        `Itens solicitados: ${requestedItems}`,
-                        `Endereço de entrega: ${deliveryAddress}`,
-                        `ID da compra: ${order.id}`,
-                      ].join("\n");
-                      const deliveryUrl = `https://wa.me/5511964511999?text=${encodeURIComponent(deliveryMessage)}`;
-                      return (
-                        <tr key={order.id}>
-                          <td>{orderDate}</td>
-                          <td>{requestedItems}</td>
-                          <td>{money(Number(order.total_cents ?? 0) / 100)}</td>
-                          <td><span className="customer-account-status">{paymentLabels[order.payment_status] ?? order.payment_status}</span></td>
-                          <td>{fulfillmentLabels[order.fulfillment_status] ?? order.fulfillment_status}</td>
-                          <td><a className="customer-account-delivery-link" href={deliveryUrl} target="_blank" rel="noreferrer" aria-label={`Combinar entrega do pedido ${order.id} pelo WhatsApp`}>Combinar entrega</a></td>
-                        </tr>
-                      );
-                    })()
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+          {ordersError && <p className="customer-account-empty" role="alert">Não foi possível carregar seus pedidos agora. Atualize a página em instantes.</p>}
+          
+          {!ordersError && !orders?.length ? (
+              <p className="customer-account-empty">Suas compras de velas e eventos aparecerão aqui.</p>
+            ) : !ordersError ? (
+              <div className="customer-account-table-wrap">
+                <table className="customer-account-table customer-orders-table">
+                  <thead><tr><th>Data</th><th>Itens</th><th>Valor</th><th>Pagamento</th><th>Status da entrega</th><th>Ação</th></tr></thead>
+                  <tbody>
+                    {orders.map((order) => (
+                      (() => {
+                        const orderDate = new Date(order.created_at).toLocaleDateString("pt-BR");
+                        const requestedItems = (order.items as { name: string; quantity: number }[])
+                          .map((item) => `${item.quantity}× ${item.name}`)
+                          .join(", ");
+                        const deliveryAddress = [
+                          [profile?.street, profile?.address_number].filter(Boolean).join(", "),
+                          profile?.address_complement,
+                          profile?.neighborhood,
+                          [profile?.city, profile?.state].filter(Boolean).join(" / "),
+                          profile?.postal_code && `CEP ${profile.postal_code}`,
+                        ].filter(Boolean).join(", ") || "Endereço não cadastrado";
+                        const deliveryMessage = [
+                          "Olá, Ofir! Gostaria de combinar a entrega do meu pedido.",
+                          `Data da compra: ${orderDate}`,
+                          `Itens solicitados: ${requestedItems}`,
+                          `Endereço de entrega: ${deliveryAddress}`,
+                          `ID da compra: ${order.id}`,
+                        ].join("\n");
+                        const deliveryUrl = `https://wa.me/5511964511999?text=${encodeURIComponent(deliveryMessage)}`;
+                        return (
+                          <tr key={order.id}>
+                            <td>{orderDate}</td>
+                            <td>{requestedItems}</td>
+                            <td>{money(Number(order.total_cents ?? 0) / 100)}</td>
+                            <td><span className="customer-account-status">{paymentLabels[order.payment_status] ?? order.payment_status}</span></td>
+                            <td>{fulfillmentLabels[order.fulfillment_status] ?? order.fulfillment_status}</td>
+                            <td>
+                              {order.payment_status === "pending" ? (
+                                <ResumeOrderButton orderId={order.id} />
+                              ) : order.payment_status === "approved" ? (
+                                <a className="customer-account-delivery-link" href={deliveryUrl} target="_blank" rel="noreferrer" aria-label={`Combinar entrega do pedido ${order.id} pelo WhatsApp`}>Combinar entrega</a>
+                              ) : "—"}
+                            </td>
+                          </tr>
+                        );
+                      })()
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : null
+          }
         </section>
       </main>
     </div>

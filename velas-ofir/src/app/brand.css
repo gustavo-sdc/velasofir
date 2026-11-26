@@ -2441,6 +2441,24 @@
 .storefront .customer-account-delivery-link:hover {
   background: #383838;
 }
+.storefront .customer-account-order-action {
+  display: grid;
+  justify-items: start;
+  gap: 0.375rem;
+}
+.storefront .customer-account-order-action button {
+  border: 0;
+  cursor: pointer;
+}
+.storefront .customer-account-order-action button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+.storefront .customer-account-order-message {
+  max-width: 14rem;
+  color: #555;
+  font: 400 0.7rem/1.4 var(--sans);
+}
 .storefront .customer-account-empty {
   margin: 0;
   padding: 1.125rem 1rem;
