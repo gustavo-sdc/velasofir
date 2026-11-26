@@ -58,9 +58,6 @@ export async function POST(request: Request) {
   const orderId = bodyDataId || dataId;
   if (!notice || notice.type !== "order" || orderId !== dataId || !/^[A-Za-z0-9_-]{10,64}$/.test(orderId)) return NextResponse.json({ received: true });
   try {
-    const simulatedReference = String(noticeData?.external_reference ?? "");
-    if (simulatedReference && !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(simulatedReference))
-      return NextResponse.json({ received: true });
     const accessToken = process.env.MERCADO_PAGO_ACCESS_TOKEN;
     if (!accessToken) return NextResponse.json({ error: "Integração não configurada." }, { status: 503 });
     const response = await fetch(`https://api.mercadopago.com/v1/orders/${encodeURIComponent(orderId)}`, {
