@@ -38,8 +38,16 @@ const sections = [
 const statusLabel: Record<string, string> = {
   pending: "Pendente",
   paid: "Pago",
+  approved: "Pagamento confirmado",
+  awaiting_payment: "Aguardando pagamento",
+  payment_confirmed: "Pagamento confirmado",
+  preparing: "Preparando pedido",
+  shipped: "A caminho",
   delivered: "Entregue",
   canceled: "Cancelado",
+  cancelled: "Cancelado",
+  rejected: "Recusado",
+  review: "Em revisão",
   refunded: "Reembolsado",
 };
 export function AdminDashboard({
@@ -66,7 +74,7 @@ export function AdminDashboard({
   const financial = ["owner", "admin"].includes(role);
   const editing = ["owner", "admin", "editor"].includes(role);
   const paid = operations.rows.filter((r) =>
-    ["paid", "delivered"].includes(r.status),
+    ["paid", "approved", "payment_confirmed", "preparing", "shipped", "delivered"].includes(r.status),
   );
   const buyers = new Set(
     paid.filter((r) => r.type === "product").map((r) => r.client_id),
@@ -74,18 +82,18 @@ export function AdminDashboard({
   const tickets = paid
     .filter((r) => r.type === "event_ticket")
     .reduce((s, r) => s + r.quantity, 0);
-  const cancellations = operations.rows.filter((r) => r.status === "canceled");
+  const cancellations = operations.rows.filter((r) => ["canceled", "cancelled"].includes(r.status));
   const refunds = operations.rows.filter((r) => r.status === "refunded");
   const rows = operations.rows
     .filter((r) =>
       section === "registrations"
         ? r.type === "event_ticket"
         : section === "returns"
-          ? ["canceled", "refunded"].includes(r.status)
+        ? ["canceled", "cancelled", "refunded"].includes(r.status)
           : r.type === "product",
     )
     .filter((r) =>
-      `${r.uuid} ${statusLabel[r.status] ?? r.status}`
+      `${r.reference ?? r.uuid} ${r.description ?? ""} ${statusLabel[r.status] ?? r.status}`
         .toLowerCase()
         .includes(search.toLowerCase()),
     )
@@ -290,7 +298,7 @@ export function AdminDashboard({
                         <tbody>
                           {rows.map((r) => (
                             <tr key={r.uuid}>
-                              <td title={r.uuid}>{r.uuid.slice(0, 8)}</td>
+                              <td title={r.uuid}>{r.reference ?? r.uuid.slice(0, 8)}</td>
                               <td>
                                 {new Date(r.buy_date).toLocaleDateString(
                                   "pt-BR",
@@ -298,9 +306,8 @@ export function AdminDashboard({
                                 )}
                               </td>
                               <td>
-                                {r.type === "event_ticket"
-                                  ? "Workshop"
-                                  : "Produto"}
+                                {r.type === "event_ticket" ? "Workshop" : "Produto"}
+                                {r.description && <><br /><small>{r.description}</small></>}
                               </td>
                               <td>{r.quantity}</td>
                               <td>{money(Number(r.value))}</td>

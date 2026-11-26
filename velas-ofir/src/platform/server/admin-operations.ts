@@ -3,6 +3,8 @@ import { requireStaff } from "./staff";
 import { privilegedDatabase } from "./supabase";
 export type Purchase = {
   uuid: string;
+  reference?: string;
+  description?: string;
   client_id: string;
   type: string;
   quantity: number;
@@ -58,6 +60,51 @@ export async function adminOperations() {
           buy_date: order.created_at,
         });
       if ((fresh.data ?? []).length < 1000) break;
+    }
+    for (let start = 0; ; start += 500) {
+      const customerOrders = await db
+        .from("customer_orders")
+        .select("id,customer_email,items,payment_status,fulfillment_status,created_at")
+        .order("created_at", { ascending: false })
+        .range(start, start + 499);
+      if (customerOrders.error) throw customerOrders.error;
+      for (const order of customerOrders.data ?? []) {
+        const items = Array.isArray(order.items)
+          ? (order.items as {
+              kind?: unknown;
+              name?: unknown;
+              ticket_name?: unknown;
+              quantity?: unknown;
+              unit_cents?: unknown;
+            }[])
+          : [];
+        items.forEach((item, index) => {
+          const quantity = Number(item.quantity);
+          const unitCents = Number(item.unit_cents);
+          if (
+            !Number.isSafeInteger(quantity) || quantity < 1 ||
+            !Number.isSafeInteger(unitCents) || unitCents < 0
+          ) return;
+          const paymentStatus = String(order.payment_status);
+          const status = paymentStatus === "approved"
+            ? String(order.fulfillment_status)
+            : paymentStatus;
+          const name = String(item.name ?? "Item do pedido");
+          const ticketName = String(item.ticket_name ?? "");
+          rows.push({
+            uuid: `customer-order:${order.id}:${index}`,
+            reference: String(order.id).slice(0, 8),
+            description: ticketName ? `${name} — ${ticketName}` : name,
+            client_id: String(order.customer_email ?? "").trim().toLowerCase(),
+            type: item.kind === "workshop" ? "event_ticket" : "product",
+            quantity,
+            value: (quantity * unitCents) / 100,
+            status,
+            buy_date: String(order.created_at),
+          });
+        });
+      }
+      if ((customerOrders.data ?? []).length < 500) break;
     }
     return { available: true, rows };
   } catch {
