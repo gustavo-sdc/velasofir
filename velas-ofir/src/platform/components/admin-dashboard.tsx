@@ -24,6 +24,7 @@ import type { Purchase } from "../server/admin-operations";
 import { BlogManager } from "./blog-manager";
 import type { BlogPost } from "../domain/blog";
 import { CustomerOrdersManager } from "./customer-orders-manager";
+import { AdminCustomersManager, type CustomerOrderRecord } from "./admin-customers-manager";
 const sections = [
   ["overview", "Visão geral", LayoutDashboard],
   ["products", "Produtos", Package],
@@ -31,6 +32,7 @@ const sections = [
   ["workshops", "Workshops e páginas", CalendarDays],
   ["blog", "Blog e conteúdos", NotebookPen],
   ["customer-orders", "Pedidos e entregas", CreditCard],
+  ["customers", "Clientes", Users],
   ["orders", "Compras", ShoppingBag],
   ["registrations", "Inscrições", Users],
   ["returns", "Cancelamentos e devoluções", RotateCcw],
@@ -55,6 +57,8 @@ export function AdminDashboard({
   workshops,
   unavailable,
   operations,
+  customerOrders,
+  customerOrdersAvailable,
   email,
   role,
   blogPosts,
@@ -66,6 +70,8 @@ export function AdminDashboard({
   workshops: WorkshopRow[];
   unavailable: boolean;
   operations: { available: boolean; rows: Purchase[] };
+  customerOrders: CustomerOrderRecord[];
+  customerOrdersAvailable: boolean;
   email: string;
   role: string;
 }) {
@@ -117,7 +123,7 @@ export function AdminDashboard({
               ([id]) =>
                 (id !== "blog" || editing) &&
                 (financial ||
-                  !["customer-orders", "orders", "registrations", "returns"].includes(
+                  !["customer-orders", "customers", "orders", "registrations", "returns"].includes(
                     id,
                   )),
             )
@@ -162,6 +168,9 @@ export function AdminDashboard({
           </div>
           {financial && section === "customer-orders" && (
             <CustomerOrdersManager />
+          )}
+          {financial && section === "customers" && (
+            <AdminCustomersManager orders={customerOrders} available={customerOrdersAvailable} />
           )}
           {section === "overview" && (
             <>

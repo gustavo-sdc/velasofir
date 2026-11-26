@@ -94,7 +94,7 @@ test("cadastro exige prazo de encomenda e foto HTTPS", () => {
     false,
   );
 });
-test("turmas precisam ter data futura, capacidade e conteúdo", () => {
+test("turmas podem ser passadas, mas exigem capacidade e conteúdo", () => {
   const workshop = {
     title: "Workshop Ofir",
     slug: "workshop-ofir",
@@ -118,7 +118,7 @@ test("turmas precisam ter data futura, capacidade e conteúdo", () => {
       ...workshop,
       starts_at: "2020-01-01T10:00:00-03:00",
     }).success,
-    false,
+    true,
   );
 });
 

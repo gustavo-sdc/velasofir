@@ -6,6 +6,7 @@ import {
   SignOut,
 } from "@/platform/components/staff-login";
 import { AdminDashboard } from "@/platform/components/admin-dashboard";
+import type { CustomerOrderRecord } from "@/platform/components/admin-customers-manager";
 import { adminOperations } from "@/platform/server/admin-operations";
 export default async function Admin() {
   const session = await staffSession();
@@ -96,6 +97,25 @@ export default async function Admin() {
   const operations = ["owner", "admin"].includes(session.role)
     ? await adminOperations()
     : { available: false, rows: [] };
+  const financial = ["owner", "admin"].includes(session.role);
+  const customerOrders: CustomerOrderRecord[] = [];
+  let customerOrdersAvailable = true;
+  if (financial) {
+    for (let offset = 0; ; offset += 500) {
+      const { data, error } = await session.db
+        .from("customer_orders")
+        .select("id,customer_id,customer_name,customer_email,delivery_address,items,total_cents,payment_status,fulfillment_status,created_at")
+        .order("created_at", { ascending: false })
+        .range(offset, offset + 499);
+      if (error) {
+        customerOrdersAvailable = false;
+        customerOrders.length = 0;
+        break;
+      }
+      customerOrders.push(...((data ?? []) as unknown as CustomerOrderRecord[]));
+      if ((data ?? []).length < 500) break;
+    }
+  }
   return (
     <AdminDashboard
       blogPosts={blog.data ?? []}
@@ -104,6 +124,8 @@ export default async function Admin() {
       workshops={workshops.data ?? []}
       unavailable={Boolean(products.error || workshops.error)}
       operations={operations}
+      customerOrders={customerOrders}
+      customerOrdersAvailable={customerOrdersAvailable}
       email={session.user.email ?? ""}
       role={session.role}
     />

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { sessionDatabase } from "@/platform/server/supabase";
+import { privilegedDatabase, sessionDatabase } from "@/platform/server/supabase";
 import { SignOut } from "@/platform/components/staff-login";
 import { ResumeOrderButton } from "@/platform/components/resume-order-button";
 import { money } from "@/platform/site";
@@ -26,6 +26,7 @@ export const metadata = {
   title: "Minha conta",
   robots: { index: false, follow: false },
 };
+export const dynamic = "force-dynamic";
 export default async function CustomerAccountPage() {
   const db = await sessionDatabase();
   if (!db)
@@ -38,13 +39,16 @@ export default async function CustomerAccountPage() {
     data: { user },
   } = await db.auth.getUser();
   if (!user) redirect("/conta/acessar");
+  // O usuário é autenticado pela sessão; a chave de serviço só lê os pedidos
+  // filtrados pelo ID dessa sessão, evitando leitura desatualizada/incompleta por RLS.
+  const ordersDb = privilegedDatabase();
   const [{ data: profile }, { data: orders, error: ordersError }] = await Promise.all([
     db
       .from("customer_profiles")
       .select("*")
       .eq("user_id", user.id)
       .maybeSingle(),
-    db
+    ordersDb
       .from("customer_orders")
       .select("*")
       .eq("customer_id", user.id)
