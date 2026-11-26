@@ -2,17 +2,26 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { privilegedDatabase } from "@/platform/server/supabase";
 
-function validSignature(request: Request, dataId: string) {
+type SignatureCheck =
+  | { valid: true }
+  | { valid: false; reason: "secret_missing" | "signature_header_missing" | "data_id_missing" | "signature_header_malformed" | "signature_mismatch" };
+
+function checkSignature(request: Request, dataId: string): SignatureCheck {
   const secret = process.env.MERCADO_PAGO_WEBHOOK_SECRET?.trim();
   const signature = request.headers.get("x-signature");
   const requestId = request.headers.get("x-request-id");
-  if (!secret || !signature || !dataId) return false;
+  if (!secret) return { valid: false, reason: "secret_missing" };
+  if (!signature) return { valid: false, reason: "signature_header_missing" };
+  if (!dataId) return { valid: false, reason: "data_id_missing" };
   const fields = Object.fromEntries(signature.split(",").map((part) => part.trim().split("=", 2)));
-  if (!fields.ts || !fields.v1 || !/^[a-f0-9]{64}$/i.test(fields.v1)) return false;
+  if (!fields.ts || !/^\d+$/.test(fields.ts) || !fields.v1 || !/^[a-f0-9]{64}$/i.test(fields.v1))
+    return { valid: false, reason: "signature_header_malformed" };
   const manifest = `id:${dataId};${requestId ? `request-id:${requestId};` : ""}ts:${fields.ts};`;
   const expected = createHmac("sha256", secret).update(manifest).digest();
   const received = Buffer.from(fields.v1, "hex");
-  return received.length === expected.length && timingSafeEqual(received, expected);
+  return received.length === expected.length && timingSafeEqual(received, expected)
+    ? { valid: true }
+    : { valid: false, reason: "signature_mismatch" };
 }
 
 export async function POST(request: Request) {
@@ -36,7 +45,16 @@ export async function POST(request: Request) {
   if (queryDataId && bodyDataId && queryDataId !== bodyDataId)
     return NextResponse.json({ error: "Identificador da notificação divergente." }, { status: 401 });
   const dataId = queryDataId || bodyDataId;
-  if (!validSignature(request, dataId)) return NextResponse.json({ error: "Assinatura inválida." }, { status: 401 });
+  const signatureCheck = checkSignature(request, dataId);
+  if (!signatureCheck.valid) {
+    console.error("[mercado-pago-webhook] Assinatura recusada", {
+      reason: signatureCheck.reason,
+      hasDataId: Boolean(dataId),
+      dataIdSource: queryDataId ? "query" : bodyDataId ? "body" : "missing",
+      hasRequestId: Boolean(request.headers.get("x-request-id")),
+    });
+    return NextResponse.json({ error: "Assinatura inválida." }, { status: 401 });
+  }
   const orderId = bodyDataId || dataId;
   if (!notice || notice.type !== "order" || orderId !== dataId || !/^[A-Za-z0-9_-]{10,64}$/.test(orderId)) return NextResponse.json({ received: true });
   try {
